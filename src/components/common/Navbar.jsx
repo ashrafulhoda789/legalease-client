@@ -2,21 +2,43 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Scale, Search, Menu, X, User } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Scale, Search, Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react';
+import { authClient } from '@/lib/auth-client'; 
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const pathname = usePathname();
+    const router = useRouter();
 
-    // Temporary mock state (Authentication integrate korar somoy contextual Auth pass kora hobe)
-    const [user, setUser] = useState(null);
+    // BetterAuth session integration
+    const { data: session, isPending } = authClient.useSession();
+    const user = session?.user;
 
     const isActive = (path) => pathname === path;
 
+    // Logout Functionality
+    const handleLogout = async () => {
+        try {
+            await authClient.signOut({
+                fetchOptions: {
+                    onSuccess: () => {
+                        setIsProfileOpen(false);
+                        setIsMenuOpen(false);
+                        router.push('/auth/signin');
+                        router.refresh();
+                    },
+                },
+            });
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    };
+
     return (
         <nav className="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
-            <div className="max-w-350 mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
 
                     {/* Logo & Brand */}
@@ -70,14 +92,44 @@ export default function Navbar() {
 
                     {/* Right Action Buttons */}
                     <div className="hidden md:flex items-center gap-3">
-                        {user ? (
-                            <Link
-                                href="/dashboard"
-                                className="flex items-center gap-2 bg-slate-800 border border-slate-700 hover:border-amber-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
-                            >
-                                <User className="w-4 h-4 text-amber-500" />
-                                Dashboard
-                            </Link>
+                        {isPending ? (
+                            <div className="w-20 h-8 bg-slate-800 animate-pulse rounded-lg"></div>
+                        ) : user ? (
+                            <div className="relative">
+                                {/* Profile Dropdown Trigger */}
+                                <button
+                                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                    className="flex items-center gap-2 bg-slate-800 border border-slate-700 hover:border-amber-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                                >
+                                    <User className="w-4 h-4 text-amber-500" />
+                                    <span>{user.name || 'Account'}</span>
+                                </button>
+
+                                {/* Dropdown Menu */}
+                                {isProfileOpen && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl py-1 z-50">
+                                        <div className="px-4 py-2 border-b border-slate-700">
+                                            <p className="text-sm font-medium text-white truncate">{user.name}</p>
+                                            <p className="text-xs text-slate-400 truncate">{user.email}</p>
+                                        </div>
+                                        <Link
+                                            href="/dashboard"
+                                            onClick={() => setIsProfileOpen(false)}
+                                            className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white"
+                                        >
+                                            <LayoutDashboard className="w-4 h-4" />
+                                            Dashboard
+                                        </Link>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-slate-700 hover:text-red-300 text-left"
+                                        >
+                                            <LogOut className="w-4 h-4" />
+                                            Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         ) : (
                             <>
                                 <Link
@@ -143,21 +195,38 @@ export default function Navbar() {
                             Dashboard
                         </Link>
                     )}
-                    <div className="pt-2 border-t border-slate-800 flex items-center gap-3">
-                        <Link
-                            href="/login"
-                            onClick={() => setIsMenuOpen(false)}
-                            className="w-1/2 text-center text-slate-300 border border-slate-700 py-1.5 rounded-lg text-sm"
-                        >
-                            Login
-                        </Link>
-                        <Link
-                            href="/register"
-                            onClick={() => setIsMenuOpen(false)}
-                            className="w-1/2 text-center bg-amber-600 text-white py-1.5 rounded-lg text-sm font-medium"
-                        >
-                            Register
-                        </Link>
+                    <div className="pt-2 border-t border-slate-800">
+                        {user ? (
+                            <div className="space-y-2">
+                                <div className="px-2 py-1 text-xs text-slate-400">
+                                    Logged in as: <span className="text-amber-500">{user.email}</span>
+                                </div>
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full flex items-center justify-center gap-2 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white py-2 rounded-lg text-sm transition-colors"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                    Logout
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-3">
+                                <Link
+                                    href="/auth/signin"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="w-1/2 text-center text-slate-300 border border-slate-700 py-1.5 rounded-lg text-sm"
+                                >
+                                    Login
+                                </Link>
+                                <Link
+                                    href="/auth/signup"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="w-1/2 text-center bg-amber-600 text-white py-1.5 rounded-lg text-sm font-medium"
+                                >
+                                    Register
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

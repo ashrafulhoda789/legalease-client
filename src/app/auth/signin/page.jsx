@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Scale, Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react';
-import { signUp } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 
 export default function SignInPage() {
     const router = useRouter();
@@ -30,7 +30,7 @@ export default function SignInPage() {
         setError('');
 
         try {
-            const res = await signIn.email({
+            const res = await authClient.signIn.email({
                 email: formData.email,
                 password: formData.password,
             });
@@ -53,7 +53,7 @@ export default function SignInPage() {
     const handleGoogleAuth = async () => {
         setLoading(true);
         try {
-            await signIn.social({
+            await authClient.signIn.social({
                 provider: "google",
                 callbackURL: "/"
             });

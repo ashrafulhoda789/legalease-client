@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Scale, Eye, EyeOff, User, Mail, Lock, UserCheck, Briefcase } from 'lucide-react';
-import { signUp } from "@/lib/auth-client";
+import { authClient } from '@/lib/auth-client';
+
 
 export default function SignUpPage() {
     const router = useRouter();
@@ -48,31 +49,53 @@ export default function SignUpPage() {
     };
 
     // Step 2: BetterAuth Signup Execution
+    // Step 2: BetterAuth Signup Execution
     const handleFinalRegister = async () => {
         setLoading(true);
         setError('');
 
         try {
-            const res = await signUp.email ({
+            console.log("Submitting to BetterAuth...", {
+                email: formData.email,
+                name: formData.name,
+                role: selectedRole
+            });
+
+            // BetterAuth signUp.email call
+            const { data, error } = await authClient.signUp.email({
                 email: formData.email,
                 password: formData.password,
                 name: formData.name,
-                role: selectedRole, // BetterAuth additional user field schema
+                role: selectedRole, // custom schema required on backend
+            }, {
+                onRequest: () => {
+                    setLoading(true);
+                },
+                onSuccess: () => {
+                    setLoading(false);
+                    setShowRoleModal(false);
+                    router.push('/');
+                    router.refresh();
+                },
+                onError: (ctx) => {
+                    setLoading(false);
+                    setError(ctx.error.message || "Registration failed.");
+                    setShowRoleModal(false);
+                }
             });
 
-            if (res?.error) {
-                setError(res.error.message || "Registration failed. Email might be in use.");
-                setShowRoleModal(false);
+            // Fallback if callbacks aren't used:
+            if (error) {
+                console.error("BetterAuth Error:", error);
+                setError(error.message || "Registration failed.");
                 setLoading(false);
-                return;
+                setShowRoleModal(false);
             }
 
-            // Success Redirect
-            router.push('/');
         } catch (err) {
-            setError("An unexpected error occurred. Please try again.");
+            console.error("Catch Block Error:", err);
+            setError("An unexpected error occurred. Please check network/console.");
             setShowRoleModal(false);
-        } finally {
             setLoading(false);
         }
     };
@@ -81,7 +104,7 @@ export default function SignUpPage() {
     const handleGoogleAuth = async () => {
         setLoading(true);
         try {
-            await signIn.social({
+            await authClient.signIn.social({
                 provider: "google",
                 callbackURL: "/"
             });
@@ -249,8 +272,8 @@ export default function SignUpPage() {
                                 type="button"
                                 onClick={() => setSelectedRole('user')}
                                 className={`p-5 rounded-2xl border flex flex-col items-center gap-3 text-center transition-all ${selectedRole === 'user'
-                                        ? 'border-amber-500 bg-amber-500/10 text-white'
-                                        : 'border-slate-800 bg-slate-800/40 text-slate-400 hover:border-slate-700'
+                                    ? 'border-amber-500 bg-amber-500/10 text-white'
+                                    : 'border-slate-800 bg-slate-800/40 text-slate-400 hover:border-slate-700'
                                     }`}
                             >
                                 <div className={`p-3 rounded-xl ${selectedRole === 'user' ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-300'}`}>
@@ -266,8 +289,8 @@ export default function SignUpPage() {
                                 type="button"
                                 onClick={() => setSelectedRole('lawyer')}
                                 className={`p-5 rounded-2xl border flex flex-col items-center gap-3 text-center transition-all ${selectedRole === 'lawyer'
-                                        ? 'border-amber-500 bg-amber-500/10 text-white'
-                                        : 'border-slate-800 bg-slate-800/40 text-slate-400 hover:border-slate-700'
+                                    ? 'border-amber-500 bg-amber-500/10 text-white'
+                                    : 'border-slate-800 bg-slate-800/40 text-slate-400 hover:border-slate-700'
                                     }`}
                             >
                                 <div className={`p-3 rounded-xl ${selectedRole === 'lawyer' ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-300'}`}>
