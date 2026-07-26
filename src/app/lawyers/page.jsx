@@ -6,7 +6,7 @@ import { getLawyers } from '@/lib/api/lawyers';
 
 export default async function LawyersPage() {
 
-    const lawyers = await getLawyers();
+    const lawyers = await getLawyers() || [];
     // console.log(lawyers);
 
     return (

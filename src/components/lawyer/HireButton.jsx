@@ -62,7 +62,7 @@ export default function HireButton({ lawyer, lawyerId }) {
                                 <div className="bg-slate-800/60 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs text-slate-300">
                                     <div className="flex justify-between">
                                         <span>Hourly Consultation:</span>
-                                        <span className="font-bold text-white">${lawyer.hourlyRate}/hr</span>
+                                        <span className="font-bold text-white">${lawyer.consultationFee}/hr</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span>Initial Response Time:</span>

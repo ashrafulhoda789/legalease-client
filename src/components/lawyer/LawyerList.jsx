@@ -94,10 +94,10 @@ export default function LawyerList({ lawyers = [] }) {
                     {filteredLawyers.map((lawyer) => {
                         const targetId = lawyer?._id || lawyer?.user?._id;
                         const name = lawyer?.name || lawyer?.user?.name || 'Unnamed Lawyer';
-                        const avatarSrc = lawyer?.profile?.photoUrl || lawyer?.image || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=250';
+                        const avatarSrc =  lawyer?.photoUrl || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=250';
                         const specialization = lawyer?.profile?.specialization || lawyer?.specialization || 'General Practitioner';
-                        const hourlyRate = lawyer?.profile?.consultationFee || lawyer?.fee || '0';
-                        const status = lawyer?.profile?.status || 'Available';
+                        const consultationFee = lawyer?.consultationFee || '0';
+                        const status = lawyer?.status || 'Available';
                         const isBusy = status === 'Busy' || lawyer?.isBusy || false;
 
                         return (
@@ -136,7 +136,7 @@ export default function LawyerList({ lawyers = [] }) {
                                     <div className="bg-slate-800/60 rounded-xl p-2 flex items-center justify-around text-xs border border-slate-800">
                                         <div className="flex items-center gap-1 text-slate-300">
                                             <DollarSign className="w-3.5 h-3.5 text-amber-500" />
-                                            <span className="font-semibold text-white">{hourlyRate}</span>/hr
+                                            <span className="font-semibold text-white">{consultationFee}</span>/hr
                                         </div>
                                         <div className="w-px h-3 bg-slate-700"></div>
                                         <div className="flex items-center gap-1 text-amber-400 font-semibold">
