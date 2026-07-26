@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Scale, Search, Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react';
-import { authClient } from '@/lib/auth-client'; 
+import { authClient } from '@/lib/auth-client';
 import Image from 'next/image';
 
 export default function Navbar() {
@@ -18,6 +18,16 @@ export default function Navbar() {
     const user = session?.user;
 
     const isActive = (path) => pathname === path;
+
+    // 🎯 Role Based Dynamic Dashboard Route Generator
+    const getDashboardPath = () => {
+        const role = user?.role;
+        if (role === 'lawyer') return '/dashboard/lawyer';
+        if (role === 'admin') return '/dashboard/admin';
+        return '/dashboard/user';
+    };
+
+    const dashboardPath = getDashboardPath();
 
     // Logout Functionality
     const handleLogout = async () => {
@@ -39,6 +49,7 @@ export default function Navbar() {
 
     return (
         <nav className="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+            
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
 
@@ -70,10 +81,14 @@ export default function Navbar() {
                         >
                             Browse Lawyers
                         </Link>
+
+                        {/* 🎯 Role-Based Dynamic Dashboard Link */}
                         {user && (
                             <Link
-                                href="/dashboard"
-                                className={`transition-colors font-medium ${pathname.startsWith('/dashboard') ? 'text-amber-500 font-semibold' : 'text-slate-300 hover:text-white'
+                                href={dashboardPath}
+                                className={`transition-colors font-medium ${pathname.startsWith('/dashboard')
+                                        ? 'text-amber-500 font-semibold'
+                                        : 'text-slate-300 hover:text-white'
                                     }`}
                             >
                                 Dashboard
@@ -102,18 +117,17 @@ export default function Navbar() {
                                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                                     className="flex items-center gap-2 bg-slate-800 border border-slate-700 hover:border-amber-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
                                 >
-                                    
-                                    {
-                                        user?.image ? (
-                                            <Image
-                                                src={user?.image}
-                                                alt={user?.name}
-                                                width={25}
-                                                height={25}
-                                                className='rounded-full'
-                                            />
-                                        ) : (<User className="w-4 h-4 text-amber-500" />)
-                                    }
+                                    {user?.image ? (
+                                        <Image
+                                            src={user?.image}
+                                            alt={user?.name || 'User Avatar'}
+                                            width={25}
+                                            height={25}
+                                            className="rounded-full"
+                                        />
+                                    ) : (
+                                        <User className="w-4 h-4 text-amber-500" />
+                                    )}
                                     <span>{user.name || 'Account'}</span>
                                 </button>
 
@@ -123,15 +137,21 @@ export default function Navbar() {
                                         <div className="px-4 py-2 border-b border-slate-700">
                                             <p className="text-sm font-medium text-white truncate">{user.name}</p>
                                             <p className="text-xs text-slate-400 truncate">{user.email}</p>
+                                            <span className="inline-block mt-1 text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded">
+                                                {user.role || 'user'}
+                                            </span>
                                         </div>
+
+                                        {/* 🎯 Role-Based Dashboard Link in Dropdown */}
                                         <Link
-                                            href="/dashboard"
+                                            href={dashboardPath}
                                             onClick={() => setIsProfileOpen(false)}
                                             className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white"
                                         >
                                             <LayoutDashboard className="w-4 h-4" />
                                             Dashboard
                                         </Link>
+
                                         <button
                                             onClick={handleLogout}
                                             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-slate-700 hover:text-red-300 text-left"
@@ -198,15 +218,19 @@ export default function Navbar() {
                     >
                         Browse Lawyers
                     </Link>
+
+                    {/* 🎯 Mobile Role-Based Dashboard Link */}
                     {user && (
                         <Link
-                            href="/dashboard"
+                            href={dashboardPath}
                             onClick={() => setIsMenuOpen(false)}
-                            className={`block py-2 ${pathname.startsWith('/dashboard') ? 'text-amber-500 font-bold' : 'text-slate-200'}`}
+                            className={`block py-2 ${pathname.startsWith('/dashboard') ? 'text-amber-500 font-bold' : 'text-slate-200'
+                                }`}
                         >
                             Dashboard
                         </Link>
                     )}
+
                     <div className="pt-2 border-t border-slate-800">
                         {user ? (
                             <div className="space-y-2">

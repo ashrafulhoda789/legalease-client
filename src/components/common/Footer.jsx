@@ -4,8 +4,15 @@ import React from 'react';
 import Link from 'next/link';
 import { Scale, Mail, Twitter, Linkedin, Instagram } from 'lucide-react';
 import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
+    const pathname = usePathname();
+
+    if (pathname?.startsWith('/dashboard')) {
+        return null;
+    }
+    
     return (
         <footer className="bg-slate-900 border-t border-slate-800 text-slate-300">
             <div className="max-w-350 mx-auto px-4 sm:px-6 lg:px-8 py-12">
