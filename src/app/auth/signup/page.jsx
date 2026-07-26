@@ -24,7 +24,7 @@ export default function SignUpPage() {
 
     // Role Selection State
     const [showRoleModal, setShowRoleModal] = useState(false);
-    const [selectedRole, setSelectedRole] = useState('user'); // 'user' (Client) or 'lawyer'
+    const [selectedRole, setSelectedRole] = useState('user');
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,7 +48,6 @@ export default function SignUpPage() {
         setShowRoleModal(true);
     };
 
-    // Step 2: BetterAuth Signup Execution
     // Step 2: BetterAuth Signup Execution
     const handleFinalRegister = async () => {
         setLoading(true);
