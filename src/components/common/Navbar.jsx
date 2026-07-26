@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Scale, Search, Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react';
 import { authClient } from '@/lib/auth-client'; 
+import Image from 'next/image';
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -101,7 +102,18 @@ export default function Navbar() {
                                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                                     className="flex items-center gap-2 bg-slate-800 border border-slate-700 hover:border-amber-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
                                 >
-                                    <User className="w-4 h-4 text-amber-500" />
+                                    
+                                    {
+                                        user?.image ? (
+                                            <Image
+                                                src={user?.image}
+                                                alt={user?.name}
+                                                width={25}
+                                                height={25}
+                                                className='rounded-full'
+                                            />
+                                        ) : (<User className="w-4 h-4 text-amber-500" />)
+                                    }
                                     <span>{user.name || 'Account'}</span>
                                 </button>
 

@@ -5,8 +5,6 @@ import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, EffectFade } from 'swiper/modules';
 import { Scale, ShieldCheck, Gavel, Award, ArrowRight, CheckCircle2 } from 'lucide-react';
-
-// Swiper Essential CSS
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
@@ -110,7 +108,7 @@ export default function HeroBanner() {
                                         </Link>
 
                                         <Link
-                                            href="/register"
+                                            href="/auth/signup"
                                             className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium px-5 sm:px-6 py-3 rounded-xl transition-colors text-sm sm:text-base"
                                         >
                                             Join as a Lawyer
