@@ -25,7 +25,7 @@ export default function DashboardSidebar() {
     const navItems = {
         user: [
             { name: 'Dashboard', href: '/dashboard/user', icon: LayoutDashboard },
-            { name: 'My Hiring Requests', href: '/dashboard/user/my-requests', icon: FileText },
+            { name: 'My Hiring Requests', href: '/dashboard/user/hiring-history', icon: FileText },
             { name: 'Settings', href: '/dashboard/user/settings', icon: Settings },
         ],
         lawyer: [

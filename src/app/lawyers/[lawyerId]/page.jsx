@@ -19,7 +19,6 @@ export default async function LawyerDetailsPage({ params }) {
         console.error('Failed to fetch lawyer:', error);
     }
 
-    // যদি আইনজীবী না পাওয়া যায়
     if (!lawyer || lawyer.message) {
         return (
             <div className="w-full min-h-screen bg-slate-950 flex flex-col justify-center items-center text-white p-6 space-y-4">

@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ShieldCheck, CheckCircle } from 'lucide-react';
+import { ShieldCheck, CheckCircle, Loader2 } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
+import { createHireRequest } from '@/lib/action/lawyer-hiring'; // 👈 Server Action Import
 
 export default function HireButton({ lawyer, lawyerId }) {
     const router = useRouter();
@@ -13,6 +14,7 @@ export default function HireButton({ lawyer, lawyerId }) {
     const [isHireModalOpen, setIsHireModalOpen] = useState(false);
     const [hireSuccess, setHireSuccess] = useState(false);
     const [submittingHire, setSubmittingHire] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleHireClick = () => {
         if (!currentUser) {
@@ -24,23 +26,47 @@ export default function HireButton({ lawyer, lawyerId }) {
 
     const handleConfirmHire = async () => {
         setSubmittingHire(true);
-        await new Promise((resolve) => setTimeout(resolve, 1200));
-        setSubmittingHire(false);
-        setHireSuccess(true);
+        setErrorMessage('');
+
+        try {
+            // Payload Prepare
+            const payload = {
+                userId: currentUser.id,
+                userName: currentUser.name,
+                userEmail: currentUser.email,
+                lawyerId: lawyerId || lawyer?._id,
+                lawyerName: lawyer?.name,
+                lawyerSpecialization: lawyer?.specialization || lawyer?.lawyerSpecialization || 'General Legal',
+                consultationFee: lawyer?.consultationFee || 0,
+            };
+
+            // 🚀 Direct call to your Server Action
+            const res = await createHireRequest(payload);
+
+            if (res?.success || res?.insertedId) {
+                setHireSuccess(true);
+            } else {
+                setErrorMessage(res?.message || 'Something went wrong. Please try again.');
+            }
+        } catch (error) {
+            console.error('Failed to submit hire request:', error);
+            setErrorMessage('An unexpected error occurred. Please try again.');
+        } finally {
+            setSubmittingHire(false);
+        }
     };
 
     return (
         <>
             <button
                 onClick={handleHireClick}
-                disabled={lawyer.isBusy}
-                className={`w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg ${
-                    lawyer.isBusy
+                disabled={lawyer?.isBusy}
+                className={`w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg ${lawyer?.isBusy
                         ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
                         : 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/20'
-                }`}
+                    }`}
             >
-                {lawyer.isBusy ? 'Not Available' : 'Hire Lawyer'}
+                {lawyer?.isBusy ? 'Not Available' : 'Hire Lawyer'}
             </button>
 
             {/* Modal */}
@@ -55,14 +81,20 @@ export default function HireButton({ lawyer, lawyerId }) {
                                     </div>
                                     <h3 className="text-xl font-bold text-white">Confirm Hiring Request</h3>
                                     <p className="text-xs text-slate-400">
-                                        You are about to send a legal consultation request to <span className="text-white font-semibold">{lawyer.name}</span>.
+                                        You are about to send a legal consultation request to <span className="text-white font-semibold">{lawyer?.name}</span>.
                                     </p>
                                 </div>
+
+                                {errorMessage && (
+                                    <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-xl text-center">
+                                        {errorMessage}
+                                    </div>
+                                )}
 
                                 <div className="bg-slate-800/60 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs text-slate-300">
                                     <div className="flex justify-between">
                                         <span>Hourly Consultation:</span>
-                                        <span className="font-bold text-white">${lawyer.consultationFee}/hr</span>
+                                        <span className="font-bold text-white">${lawyer?.consultationFee}/hr</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span>Initial Response Time:</span>
@@ -73,6 +105,7 @@ export default function HireButton({ lawyer, lawyerId }) {
                                 <div className="flex gap-3">
                                     <button
                                         onClick={() => setIsHireModalOpen(false)}
+                                        disabled={submittingHire}
                                         className="w-1/2 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-sm font-medium transition-colors"
                                     >
                                         Cancel
@@ -80,9 +113,15 @@ export default function HireButton({ lawyer, lawyerId }) {
                                     <button
                                         onClick={handleConfirmHire}
                                         disabled={submittingHire}
-                                        className="w-1/2 bg-amber-600 hover:bg-amber-500 text-white py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center justify-center"
+                                        className="w-1/2 bg-amber-600 hover:bg-amber-500 text-white py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
                                     >
-                                        {submittingHire ? 'Sending...' : 'Confirm Request'}
+                                        {submittingHire ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin" /> Sending...
+                                            </>
+                                        ) : (
+                                            'Confirm Request'
+                                        )}
                                     </button>
                                 </div>
                             </>
@@ -93,17 +132,17 @@ export default function HireButton({ lawyer, lawyerId }) {
                                 </div>
                                 <h3 className="text-2xl font-bold text-white">Request Submitted!</h3>
                                 <p className="text-xs text-slate-400">
-                                    Your consultation request has been sent to <span className="text-white">{lawyer.name}</span>.
+                                    Your consultation request has been sent to <span className="text-white font-medium">{lawyer?.name}</span>.
                                 </p>
                                 <button
                                     onClick={() => {
                                         setIsHireModalOpen(false);
                                         setHireSuccess(false);
-                                        router.push('/dashboard');
+                                        router.push('/dashboard/user/hiring-history');
                                     }}
                                     className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2.5 rounded-xl text-sm font-bold transition-colors"
                                 >
-                                    Go to Dashboard
+                                    Go to Hiring History
                                 </button>
                             </div>
                         )}

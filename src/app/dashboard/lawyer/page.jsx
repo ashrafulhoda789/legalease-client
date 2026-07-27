@@ -100,7 +100,7 @@ export default function LawyerDashboardPage() {
                     </p>
                 </div>
                 <Link
-                    href="/dashboard/lawyer/manage-profile"
+                    href="/dashboard/lawyer/manage-legal-profile"
                     className="bg-amber-600 hover:bg-amber-700 text-white font-medium px-4 py-2.5 rounded-xl transition-all shadow-md hover:shadow-amber-600/20 text-sm shrink-0"
                 >
                     Update Profile
