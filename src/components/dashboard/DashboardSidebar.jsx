@@ -12,7 +12,10 @@ import {
     Settings,
     LogOut,
     Scale,
-    Shield
+    Shield,
+    UserPen,
+    MessageSquareMore,
+
 } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 
@@ -26,7 +29,8 @@ export default function DashboardSidebar() {
         user: [
             { name: 'Dashboard', href: '/dashboard/user', icon: LayoutDashboard },
             { name: 'My Hiring Requests', href: '/dashboard/user/hiring-history', icon: FileText },
-            { name: 'Settings', href: '/dashboard/user/settings', icon: Settings },
+            { name: 'Profile Management', href: '/dashboard/user/update-profile', icon: UserPen },
+            { name: 'Comment Management', href: '/dashboard/user/comments', icon: MessageSquareMore },
         ],
         lawyer: [
             { name: 'Dashboard', href: '/dashboard/lawyer', icon: LayoutDashboard },
