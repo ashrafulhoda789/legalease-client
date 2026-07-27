@@ -1,8 +1,8 @@
 import { requireRole } from "@/lib/core/session";
 
 
-const LawyerDashboardLayout = async ({ children }) => {
-    await requireRole('lawyer')
+const adminDashboardLayout = async ({ children }) => {
+    await requireRole('admin')
     return (
         <div className='flex gap-10 min-h-screen'>
             <div className='flex-1'>
@@ -12,4 +12,4 @@ const LawyerDashboardLayout = async ({ children }) => {
     );
 };
 
-export default LawyerDashboardLayout;
+export default adminDashboardLayout;

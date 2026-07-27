@@ -54,18 +54,18 @@ export default function SignUpPage() {
         setError('');
 
         try {
-            console.log("Submitting to BetterAuth...", {
-                email: formData.email,
-                name: formData.name,
-                role: selectedRole
-            });
+            // console.log("Submitting to BetterAuth...", {
+            //     email: formData.email,
+            //     name: formData.name,
+            //     role: selectedRole
+            // });
 
             // BetterAuth signUp.email call
             const { data, error } = await authClient.signUp.email({
                 email: formData.email,
                 password: formData.password,
                 name: formData.name,
-                role: selectedRole, // custom schema required on backend
+                requestedRole: selectedRole, // custom schema required on backend
             }, {
                 onRequest: () => {
                     setLoading(true);
@@ -85,14 +85,14 @@ export default function SignUpPage() {
 
             // Fallback if callbacks aren't used:
             if (error) {
-                console.error("BetterAuth Error:", error);
+                // console.error("BetterAuth Error:", error);
                 setError(error.message || "Registration failed.");
                 setLoading(false);
                 setShowRoleModal(false);
             }
 
         } catch (err) {
-            console.error("Catch Block Error:", err);
+            // console.error("Catch Block Error:", err);
             setError("An unexpected error occurred. Please check network/console.");
             setShowRoleModal(false);
             setLoading(false);
@@ -250,7 +250,7 @@ export default function SignUpPage() {
                 {/* Footer */}
                 <p className="text-center text-xs text-slate-400 mt-6">
                     Already have an account?{' '}
-                    <Link href="/signin" className="text-amber-500 hover:underline font-semibold">
+                    <Link href="/auth/signin" className="text-amber-500 hover:underline font-semibold">
                         Sign In
                     </Link>
                 </p>

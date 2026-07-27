@@ -18,6 +18,7 @@ import {
 
 } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
+import { GrAnalytics, GrTransaction } from 'react-icons/gr';
 
 export default function DashboardSidebar() {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -36,13 +37,12 @@ export default function DashboardSidebar() {
             { name: 'Dashboard', href: '/dashboard/lawyer', icon: LayoutDashboard },
             { name: 'Hiring History', href: '/dashboard/lawyer/hiring-history', icon: UserCheck },
             { name: 'Manage Legal Profile', href: '/dashboard/lawyer/manage-legal-profile', icon: Briefcase },
-            { name: 'Settings', href: '/dashboard/lawyer/settings', icon: Settings },
         ],
         admin: [
             { name: 'Overview', href: '/dashboard/admin', icon: LayoutDashboard },
             { name: 'Manage Users', href: '/dashboard/admin/manage-users', icon: Users },
-            { name: 'Manage Lawyers', href: '/dashboard/admin/manage-lawyers', icon: Shield },
-            { name: 'Settings', href: '/dashboard/admin/settings', icon: Settings },
+            { name: 'Manage Lawyers', href: '/dashboard/admin/all-transactions', icon: GrTransaction },
+            { name: 'Settings', href: '/dashboard/admin/analytics', icon: GrAnalytics },
         ]
     };
 

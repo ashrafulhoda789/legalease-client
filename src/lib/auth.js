@@ -22,12 +22,33 @@ export const auth = betterAuth({
     },
     user: {
         additionalFields: {
-            role: {
+            requestedRole: {
                 type: "string",
                 required: false,
                 defaultValue: "user",
                 input: true
             }
         }
-    }
+    },
+    databaseHooks: {
+        user: {
+            create: {
+                before: async (user) => {
+                    const chosenRole = user.requestedRole === "lawyer" ? "lawyer" : "user";
+
+                    return {
+                        data: {
+                            ...user,
+                            role: chosenRole, 
+                        },
+                    };
+                },
+            },
+        },
+    },
+    plugins: [
+        admin({
+            defaultRole: 'user'
+        })
+    ]
 });
