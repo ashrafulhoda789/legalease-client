@@ -2,15 +2,36 @@ import React from 'react';
 import Link from 'next/link';
 import {
     Star, DollarSign, ArrowLeft, Award, GraduationCap,
-    MapPin, Phone, ShieldCheck, Briefcase
+    MapPin, Phone, ShieldCheck
 } from 'lucide-react';
 
 import { getLawyersById } from '@/lib/api/lawyers';
 import HireButton from '@/components/lawyer/HireButton';
 import CommentSection from '@/components/lawyer/CommentSection';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { getCheckHiring } from '@/lib/api/check-hiring';
+
+async function checkIfUserHiredLawyer(lawyerId) {
+    if (!lawyerId) return false;
+
+    try {
+        const res = await getCheckHiring(lawyerId);
+
+        return Boolean(res?.isHired || res?.data?.isHired);
+    } catch (error) {
+        console.error('Error checking hire status:', error);
+        return false;
+    }
+}
 
 export default async function LawyerDetailsPage({ params }) {
     const { lawyerId } = await params;
+
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
+    const currentUser = session?.user;
 
     let lawyer = null;
     try {
@@ -33,7 +54,8 @@ export default async function LawyerDetailsPage({ params }) {
         );
     }
 
-    // Database Fields Extraction with Fallbacks
+    const isHired = currentUser ? await checkIfUserHiredLawyer(lawyerId) : false;
+
     const name = lawyer?.name || 'Unnamed Lawyer';
     const avatar = lawyer?.photoUrl || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400';
     const specialization = lawyer?.specialization?.trim() || 'Licensed Attorney';
@@ -43,7 +65,6 @@ export default async function LawyerDetailsPage({ params }) {
     const bio = lawyer?.bio || 'No professional bio available.';
     const isBusy = lawyer?.status === 'Busy';
 
-    // New Fields from Image Data
     const barCouncilNo = lawyer?.barCouncilNo;
     const chamberAddress = lawyer?.chamberAddress;
     const contactNumber = lawyer?.contactNumber;
@@ -65,7 +86,6 @@ export default async function LawyerDetailsPage({ params }) {
                 {/* Main Lawyer Profile Header Card */}
                 <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row gap-8 items-center md:items-start">
 
-                    {/* Image */}
                     <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-2xl overflow-hidden border-2 border-slate-700 shrink-0 bg-slate-800">
                         <img
                             src={avatar}
@@ -74,14 +94,12 @@ export default async function LawyerDetailsPage({ params }) {
                         />
                     </div>
 
-                    {/* Basic Info & Status */}
                     <div className="flex-1 space-y-4 text-center md:text-left w-full">
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
                             <div>
                                 <h1 className="text-2xl sm:text-3xl font-extrabold text-white">{name}</h1>
                                 <p className="text-amber-500 font-medium text-sm sm:text-base mt-1">{specialization}</p>
 
-                                {/* Bar Council Number Badge */}
                                 {barCouncilNo && (
                                     <p className="text-xs text-slate-400 flex items-center justify-center md:justify-start gap-1 mt-1">
                                         <ShieldCheck className="w-4 h-4 text-emerald-400 inline" />
@@ -90,17 +108,15 @@ export default async function LawyerDetailsPage({ params }) {
                                 )}
                             </div>
 
-                            {/* Availability Badge */}
                             <span className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 shrink-0 ${isBusy
-                                    ? 'bg-red-500/10 text-red-400 border border-red-500/30'
-                                    : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                                ? 'bg-red-500/10 text-red-400 border border-red-500/30'
+                                : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
                                 }`}>
                                 <span className={`w-2 h-2 rounded-full ${isBusy ? 'bg-red-400' : 'bg-emerald-400'}`}></span>
                                 {isBusy ? 'Currently Fully Booked' : 'Available for Consultation'}
                             </span>
                         </div>
 
-                        {/* Quick Stats Grid */}
                         <div className="grid grid-cols-3 gap-2 bg-slate-800/50 p-3 rounded-2xl border border-slate-800 text-center">
                             <div>
                                 <p className="text-xs text-slate-400">Consultation Fee</p>
@@ -120,13 +136,11 @@ export default async function LawyerDetailsPage({ params }) {
                             </div>
                         </div>
 
-                        {/* Bio */}
                         <div className="space-y-1">
                             <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Professional Summary</h3>
                             <p className="text-sm text-slate-300 leading-relaxed">{bio}</p>
                         </div>
 
-                        {/* Contact Info & Chamber Address */}
                         <div className="pt-3 border-t border-slate-800 flex flex-wrap gap-4 text-xs text-slate-300">
                             {chamberAddress && (
                                 <div className="flex items-center gap-1.5">
@@ -142,17 +156,14 @@ export default async function LawyerDetailsPage({ params }) {
                             )}
                         </div>
 
-                        {/* Hire Action Button */}
                         <div className="pt-2 flex justify-end">
                             <HireButton lawyer={lawyer} lawyerId={lawyerId} />
                         </div>
                     </div>
                 </div>
 
-                {/* Additional Details Grid (Education & Awards) */}
+                {/* Additional Details Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                    {/* Education Section */}
                     <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
                         <h2 className="text-lg font-bold text-white flex items-center gap-2">
                             <GraduationCap className="w-5 h-5 text-amber-500" /> Education & Qualifications
@@ -176,7 +187,6 @@ export default async function LawyerDetailsPage({ params }) {
                         )}
                     </div>
 
-                    {/* Awards Section */}
                     <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
                         <h2 className="text-lg font-bold text-white flex items-center gap-2">
                             <Award className="w-5 h-5 text-amber-500" /> Honors & Awards
@@ -199,11 +209,14 @@ export default async function LawyerDetailsPage({ params }) {
                             <p className="text-xs text-slate-500 italic">No awards listed.</p>
                         )}
                     </div>
-
                 </div>
 
-                {/* Comment & Feedback Section */}
-                <CommentSection lawyerId={lawyerId} initialComments={lawyer?.comments || []} />
+                {/* Comment Section */}
+                <CommentSection
+                    lawyerId={lawyerId}
+                    initialComments={lawyer?.comments || []}
+                    isHired={isHired}
+                />
 
             </div>
         </div>
