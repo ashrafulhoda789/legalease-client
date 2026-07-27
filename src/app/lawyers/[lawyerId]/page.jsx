@@ -12,13 +12,13 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { getCheckHiring } from '@/lib/api/check-hiring';
 
-async function checkIfUserHiredLawyer(lawyerId) {
-    if (!lawyerId) return false;
+async function checkIfUserHiredLawyer(lawyerId, userEmail, reqHeaders) {
+    if (!lawyerId || !userEmail) return false;
 
     try {
-        const res = await getCheckHiring(lawyerId);
+        const res = await getCheckHiring(lawyerId, userEmail, { headers: reqHeaders });
 
-        return Boolean(res?.isHired || res?.data?.isHired);
+        return Boolean(res?.isHired);
     } catch (error) {
         console.error('Error checking hire status:', error);
         return false;
@@ -27,9 +27,10 @@ async function checkIfUserHiredLawyer(lawyerId) {
 
 export default async function LawyerDetailsPage({ params }) {
     const { lawyerId } = await params;
+    const requestHeaders = await headers();
 
     const session = await auth.api.getSession({
-        headers: await headers()
+        headers: requestHeaders
     });
     const currentUser = session?.user;
 
@@ -54,7 +55,9 @@ export default async function LawyerDetailsPage({ params }) {
         );
     }
 
-    const isHired = currentUser ? await checkIfUserHiredLawyer(lawyerId) : false;
+    const isHired = currentUser?.email
+        ? await checkIfUserHiredLawyer(lawyerId, currentUser.email, requestHeaders)
+        : false;
 
     const name = lawyer?.name || 'Unnamed Lawyer';
     const avatar = lawyer?.photoUrl || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400';

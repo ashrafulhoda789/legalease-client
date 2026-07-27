@@ -1,9 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { MessageSquare, Edit3, Trash2, Star, Calendar, Loader2, AlertCircle, X, CheckCircle } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { MessageSquare, Edit3, Trash2, Star, Calendar, Loader2, AlertCircle, X, CheckCircle, User, ExternalLink, Briefcase } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { deleteComment, updateComment } from '@/lib/action/comments';
+import { getComments } from '@/lib/api/comments';
 
 export default function UserCommentsPage() {
     const [comments, setComments] = useState([]);
@@ -19,7 +22,7 @@ export default function UserCommentsPage() {
     const [editRating, setEditRating] = useState(5);
     const [actionLoading, setActionLoading] = useState(false);
 
-    // Fetch user comments on component mount
+    // Fetch user comments
     const fetchUserComments = async () => {
         try {
             setLoading(true);
@@ -27,19 +30,21 @@ export default function UserCommentsPage() {
             const userEmail = session?.data?.user?.email;
 
             if (!userEmail) {
-                setLoading(false);
+                setComments([]);
                 return;
             }
 
-            // Client side fetch using query email
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/comments/user?email=${userEmail}`);
-            const result = await res.json();
+            const result = await getComments(userEmail);
+            console.log(result.data);
 
-            if (result.success) {
+            if (result?.success) {
                 setComments(result.data || []);
+            } else {
+                setComments([]);
             }
         } catch (error) {
             console.error('Failed to load comments:', error);
+            setComments([]);
         } finally {
             setLoading(false);
         }
@@ -50,7 +55,6 @@ export default function UserCommentsPage() {
         fetchUserComments();
     }, []);
 
-    // Open Edit Modal
     const handleOpenEdit = (comment) => {
         setSelectedComment(comment);
         setEditText(comment.commentText || comment.text || '');
@@ -58,13 +62,11 @@ export default function UserCommentsPage() {
         setEditModalOpen(true);
     };
 
-    // Open Delete Modal
     const handleOpenDelete = (comment) => {
         setSelectedComment(comment);
         setDeleteModalOpen(true);
     };
 
-    // Submit Update Action
     const handleUpdateSubmit = async (e) => {
         e.preventDefault();
         if (!selectedComment) return;
@@ -77,7 +79,6 @@ export default function UserCommentsPage() {
             });
 
             if (res.success) {
-                // Optimistic UI Update
                 setComments((prev) =>
                     prev.map((c) =>
                         c._id === selectedComment._id
@@ -97,7 +98,6 @@ export default function UserCommentsPage() {
         }
     };
 
-    // Submit Delete Action
     const handleDeleteSubmit = async () => {
         if (!selectedComment) return;
 
@@ -106,7 +106,6 @@ export default function UserCommentsPage() {
             const res = await deleteComment(selectedComment._id);
 
             if (res.success) {
-                // UI থেকে রিমুভ করা
                 setComments((prev) => prev.filter((c) => c._id !== selectedComment._id));
                 setDeleteModalOpen(false);
             } else {
@@ -138,7 +137,6 @@ export default function UserCommentsPage() {
                     <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
                 </div>
             ) : comments.length === 0 ? (
-                /* Empty State */
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 sm:p-12 text-center space-y-3">
                     <MessageSquare className="w-10 h-10 sm:w-12 sm:h-12 text-slate-600 mx-auto" />
                     <h3 className="text-base sm:text-lg font-semibold text-white">No Comments Found</h3>
@@ -149,19 +147,64 @@ export default function UserCommentsPage() {
             ) : (
                 /* Card Grid View */
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {comments.map((item) => (
-                        <div
-                            key={item._id}
-                            className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-lg flex flex-col justify-between hover:border-slate-700/80 transition-all"
-                        >
-                            <div className="space-y-3">
-                                {/* Lawyer Info & Rating */}
-                                <div className="flex justify-between items-start gap-2 border-b border-slate-800/80 pb-3">
-                                    <div>
-                                        <h3 className="font-bold text-white text-sm sm:text-base">
-                                            {item.lawyerName || 'Lawyer Review'}
-                                        </h3>
-                                        <div className="flex items-center gap-1 mt-1">
+                    {comments.map((item) => {
+                        // লয়ারের অবজেক্ট ডেটা খুঁজে বের করা (API structured response অনুযায়ী)
+                        const lawyer = item.lawyerDetails || item.lawyerInfo || {};
+                        const lawyerName = lawyer.name || item.lawyerName || 'Lawyer Profile';
+                        const lawyerImage = lawyer.image || lawyer.avatar || item.lawyerImage;
+                        const lawyerSpeciality = lawyer.specialization || lawyer.category || 'Legal Specialist';
+                        const lawyerId = item.lawyerId || lawyer._id;
+
+                        return (
+                            <div
+                                key={item._id}
+                                className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-lg flex flex-col justify-between hover:border-slate-700/80 transition-all"
+                            >
+                                <div className="space-y-4">
+                                    {/* 🚀 LAWYER INFO HEADER */}
+                                    <div className="flex items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+                                        <div className="flex items-center gap-3">
+                                            {/* Lawyer Avatar */}
+                                            <div className="relative w-11 h-11 rounded-full overflow-hidden bg-slate-800 border border-slate-700 shrink-0 flex items-center justify-center">
+                                                {lawyerImage ? (
+                                                    <Image
+                                                        src={lawyerImage}
+                                                        alt={lawyerName}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                ) : (
+                                                    <User className="w-6 h-6 text-slate-500" />
+                                                )}
+                                            </div>
+
+                                            {/* Lawyer Details */}
+                                            <div>
+                                                <h3 className="font-bold text-white text-sm sm:text-base flex items-center gap-1.5">
+                                                    {lawyerName}
+                                                </h3>
+                                                <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+                                                    <Briefcase className="w-3 h-3 text-amber-500" />
+                                                    {lawyerSpeciality}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Lawyer Profile Link */}
+                                        {lawyerId && (
+                                            <Link
+                                                href={`/lawyers/${lawyerId}`}
+                                                className="p-2 text-slate-400 hover:text-amber-500 bg-slate-800/50 hover:bg-slate-800 rounded-lg transition-colors border border-slate-700/40"
+                                                title="View Lawyer Profile"
+                                            >
+                                                <ExternalLink className="w-4 h-4" />
+                                            </Link>
+                                        )}
+                                    </div>
+
+                                    {/* Rating & Date */}
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center gap-1">
                                             {[...Array(5)].map((_, i) => (
                                                 <Star
                                                     key={i}
@@ -172,39 +215,38 @@ export default function UserCommentsPage() {
                                                 />
                                             ))}
                                         </div>
+                                        <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                            <Calendar className="w-3.5 h-3.5" />
+                                            <span>
+                                                {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}
+                                            </span>
+                                        </div>
                                     </div>
 
-                                    <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                                        <Calendar className="w-3.5 h-3.5" />
-                                        <span>
-                                            {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}
-                                        </span>
-                                    </div>
+                                    {/* Comment Content */}
+                                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed italic bg-slate-950/40 p-3 rounded-xl border border-slate-800/40">
+                                        &ldquo;{item.commentText || item.text}&rdquo;
+                                    </p>
                                 </div>
 
-                                {/* Comment Content */}
-                                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed italic">
-                                    &ldquo;{item.commentText || item.text}&rdquo;
-                                </p>
+                                {/* Action Buttons */}
+                                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800/60">
+                                    <button
+                                        onClick={() => handleOpenEdit(item)}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all border border-slate-700/50"
+                                    >
+                                        <Edit3 className="w-3.5 h-3.5 text-amber-500" /> Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleOpenDelete(item)}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-all"
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5" /> Delete
+                                    </button>
+                                </div>
                             </div>
-
-                            {/* Action Buttons */}
-                            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800/60">
-                                <button
-                                    onClick={() => handleOpenEdit(item)}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all border border-slate-700/50"
-                                >
-                                    <Edit3 className="w-3.5 h-3.5 text-amber-500" /> Edit
-                                </button>
-                                <button
-                                    onClick={() => handleOpenDelete(item)}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-all"
-                                >
-                                    <Trash2 className="w-3.5 h-3.5" /> Delete
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
 
@@ -224,7 +266,6 @@ export default function UserCommentsPage() {
                         </h2>
 
                         <form onSubmit={handleUpdateSubmit} className="space-y-4">
-                            {/* Rating Selector */}
                             <div className="space-y-1">
                                 <label className="block text-xs font-medium text-slate-300">Rating</label>
                                 <div className="flex gap-2">
@@ -246,7 +287,6 @@ export default function UserCommentsPage() {
                                 </div>
                             </div>
 
-                            {/* Comment Input */}
                             <div className="space-y-1">
                                 <label className="block text-xs font-medium text-slate-300">
                                     Your Comment
@@ -261,7 +301,6 @@ export default function UserCommentsPage() {
                                 />
                             </div>
 
-                            {/* Modal Actions */}
                             <div className="flex justify-end gap-3 pt-2">
                                 <button
                                     type="button"

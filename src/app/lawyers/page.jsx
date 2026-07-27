@@ -2,12 +2,15 @@ import React from 'react';
 import { getUserList } from '@/lib/api/users';
 import LawyerList from '@/components/lawyer/LawyerList';
 import { getLawyers } from '@/lib/api/lawyers';
+import { getComments } from '@/lib/api/comments';
 
 
 export default async function LawyersPage() {
 
     const lawyers = await getLawyers() || [];
     // console.log(lawyers);
+    const comments = await getComments(lawyers?.email) || [];
+    console.log('comments' ,comments);
 
     return (
         <div className="min-h-screen bg-slate-950 text-slate-100 py-10 px-4 sm:px-6 lg:px-8">
@@ -23,7 +26,7 @@ export default async function LawyersPage() {
                     </p>
                 </div>
 
-                <LawyerList lawyers={lawyers} />
+                <LawyerList lawyers={lawyers} comments={comments} />
 
             </div>
         </div>

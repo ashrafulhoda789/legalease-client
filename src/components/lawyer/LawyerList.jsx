@@ -6,7 +6,7 @@ import { Search, Filter, Star, DollarSign, ShieldAlert, ArrowRight } from 'lucid
 import { authClient } from '@/lib/auth-client';
 import Link from 'next/link';
 
-export default function LawyerList({ lawyers = [] }) {
+export default function LawyerList({ lawyers = [], comments = [] }) {
     const router = useRouter();
     const { data: session } = authClient.useSession();
 
@@ -33,6 +33,8 @@ export default function LawyerList({ lawyers = [] }) {
 
         return matchesSearch && matchesCategory;
     });
+
+    
 
     return (
         <div className="space-y-8">
@@ -141,7 +143,7 @@ export default function LawyerList({ lawyers = [] }) {
                                         <div className="w-px h-3 bg-slate-700"></div>
                                         <div className="flex items-center gap-1 text-amber-400 font-semibold">
                                             <Star className="w-3.5 h-3.5 fill-amber-400" />
-                                            {lawyer?.rating || '5.0'}
+                                            {comments?.rating || '0.0'}
                                         </div>
                                     </div>
                                 </div>
