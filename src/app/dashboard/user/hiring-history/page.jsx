@@ -1,5 +1,6 @@
 import React from 'react';
-import { Clock, CheckCircle2, XCircle, Briefcase, Calendar, DollarSign, Scale } from 'lucide-react';
+import Link from 'next/link';
+import { Clock, CheckCircle2, XCircle, Briefcase, Calendar, DollarSign, Scale, CreditCard } from 'lucide-react';
 import { getHiringHistory } from '@/lib/api/hiring-history';
 import { authClient } from '@/lib/auth-client';
 import { headers } from 'next/headers';
@@ -68,41 +69,58 @@ export default async function HiringHistoryPage() {
                 </div>
             ) : (
                 <>
+                    {/* Mobile View */}
                     <div className="grid grid-cols-1 gap-4 md:hidden">
-                        {history.map((item) => (
-                            <div
-                                key={item._id || item.id}
-                                className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-lg"
-                            >
-                                <div className="flex justify-between items-start gap-2 border-b border-slate-800/80 pb-3">
-                                    <div>
-                                        <h3 className="font-bold text-white text-base">
-                                            {item.lawyerName || 'N/A'}
-                                        </h3>
-                                        <p className="text-amber-500/90 text-xs font-medium mt-0.5">
-                                            {item.specialization || item.lawyerSpecialization || 'General Legal'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        {getStatusBadge(item.status)}
-                                    </div>
-                                </div>
-
-                                <div className="flex justify-between items-center text-xs text-slate-400 pt-1">
-                                    <div className="flex items-center gap-1 font-semibold text-slate-200">
-                                        <DollarSign className="w-3.5 h-3.5 text-slate-400" />
-                                        <span>{item.fee || item.consultationFee || 0} / hr</span>
+                        {history.map((item) => {
+                            const isAccepted = item.status?.toLowerCase() === 'accepted';
+                            return (
+                                <div
+                                    key={item._id || item.id}
+                                    className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-lg"
+                                >
+                                    <div className="flex justify-between items-start gap-2 border-b border-slate-800/80 pb-3">
+                                        <div>
+                                            <h3 className="font-bold text-white text-base">
+                                                {item.lawyerName || 'N/A'}
+                                            </h3>
+                                            <p className="text-amber-500/90 text-xs font-medium mt-0.5">
+                                                {item.specialization || item.lawyerSpecialization || 'General Legal'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            {getStatusBadge(item.status)}
+                                        </div>
                                     </div>
 
-                                    <div className="flex items-center gap-1.5 text-slate-400">
-                                        <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                                        <span>{item.hiringDate || (item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A')}</span>
+                                    <div className="flex justify-between items-center text-xs text-slate-400 pt-1">
+                                        <div className="flex items-center gap-1 font-semibold text-slate-200">
+                                            <DollarSign className="w-3.5 h-3.5 text-slate-400" />
+                                            <span>{item.fee || item.consultationFee || 0} / hr</span>
+                                        </div>
+
+                                        <div className="flex items-center gap-1.5 text-slate-400">
+                                            <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                                            <span>{item.hiringDate || (item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A')}</span>
+                                        </div>
                                     </div>
+
+                                    {/* Pay Button for Mobile */}
+                                    {isAccepted && (
+                                        <div className="pt-2 border-t border-slate-800/60">
+                                            <Link
+                                                href={`/checkout?id=${item._id || item.id}`}
+                                                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-slate-950 transition-colors shadow-md"
+                                            >
+                                                <CreditCard className="w-4 h-4" /> Pay Now
+                                            </Link>
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
+                    {/* Desktop Table View */}
                     <div className="hidden md:block bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left text-sm text-slate-300">
@@ -113,34 +131,67 @@ export default async function HiringHistoryPage() {
                                         <th className="py-4 px-6">Consultation Fee</th>
                                         <th className="py-4 px-6">Hiring Date</th>
                                         <th className="py-4 px-6 text-center">Status</th>
+                                        <th className="py-4 px-6 text-right">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-800/60">
-                                    {history.map((item) => (
-                                        <tr key={item._id || item.id} className="hover:bg-slate-800/30 transition-colors">
-                                            <td className="py-4 px-6 font-semibold text-white">
-                                                {item.lawyerName || 'N/A'}
-                                            </td>
-                                            <td className="py-4 px-6 text-amber-500/90 font-medium">
-                                                {item.specialization || item.lawyerSpecialization || 'General Legal'}
-                                            </td>
-                                            <td className="py-4 px-6">
-                                                <span className="inline-flex items-center text-slate-200 font-semibold">
-                                                    <DollarSign className="w-3.5 h-3.5 text-slate-400" />
-                                                    {item.fee || item.consultationFee || 0}
-                                                </span>
-                                            </td>
-                                            <td className="py-4 px-6 text-slate-400 text-xs">
-                                                <span className="inline-flex items-center gap-1.5">
-                                                    <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                                                    {item.hiringDate || (item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A')}
-                                                </span>
-                                            </td>
-                                            <td className="py-4 px-6 text-center">
-                                                {getStatusBadge(item.status)}
-                                            </td>
-                                        </tr>
-                                    ))}
+                                    {history.map((item) => {
+                                        const isAccepted = item.status?.toLowerCase() === 'accepted';
+                                        return (
+                                            <tr key={item._id || item.id} className="hover:bg-slate-800/30 transition-colors">
+                                                <td className="py-4 px-6 font-semibold text-white">
+                                                    {item.lawyerName || 'N/A'}
+                                                </td>
+                                                <td className="py-4 px-6 text-amber-500/90 font-medium">
+                                                    {item.specialization || item.lawyerSpecialization || 'General Legal'}
+                                                </td>
+                                                <td className="py-4 px-6">
+                                                    <span className="inline-flex items-center text-slate-200 font-semibold">
+                                                        <DollarSign className="w-3.5 h-3.5 text-slate-400" />
+                                                        {item.fee || item.consultationFee || 0}
+                                                    </span>
+                                                </td>
+                                                <td className="py-4 px-6 text-slate-400 text-xs">
+                                                    <span className="inline-flex items-center gap-1.5">
+                                                        <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                                                        {item.hiringDate || (item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A')}
+                                                    </span>
+                                                </td>
+                                                <td className="py-4 px-6 text-center">
+                                                    {getStatusBadge(item.status)}
+                                                </td>
+                                                {/* Hiring History Table Cell */}
+                                                <td className="py-4 px-6 text-right">
+                                                  
+                                                    {item.paymentStatus === 'paid' ? (
+                                                        <button
+                                                            disabled
+                                                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 cursor-not-allowed"
+                                                        >
+                                                            ✓ Paid
+                                                        </button>
+                                                    ) : isAccepted ? (
+                                                       
+                                                        <form action="/api/checkout_sessions" method="POST">
+                                                            <input type="hidden" name="hiringId" value={item._id || item.id} />
+                                                            <input type="hidden" name="fee" value={item.fee || item.consultationFee || 0} />
+                                                            <input type="hidden" name="lawyerName" value={item.lawyerName || 'Lawyer'} />
+
+                                                            <button
+                                                                type="submit"
+                                                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-slate-950 transition-colors shadow-sm cursor-pointer"
+                                                            >
+                                                                Pay Now
+                                                            </button>
+                                                        </form>
+                                                    ) : (
+                                                       
+                                                        <span className="text-xs text-slate-500 italic">N/A</span>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
                                 </tbody>
                             </table>
                         </div>

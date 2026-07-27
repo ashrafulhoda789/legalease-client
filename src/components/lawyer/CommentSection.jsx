@@ -96,7 +96,7 @@ export default function CommentSection({ lawyerId, initialComments = [], isHired
         }
 
         if (!isHired) {
-            alert('You can only review or comment on lawyers you have hired.');
+            // alert('You can only review or comment on lawyers you have hired.');
             return;
         }
 
