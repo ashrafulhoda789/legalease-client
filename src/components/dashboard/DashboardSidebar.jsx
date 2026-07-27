@@ -39,10 +39,9 @@ export default function DashboardSidebar() {
             { name: 'Manage Legal Profile', href: '/dashboard/lawyer/manage-legal-profile', icon: Briefcase },
         ],
         admin: [
-            { name: 'Overview', href: '/dashboard/admin', icon: LayoutDashboard },
             { name: 'Manage Users', href: '/dashboard/admin/manage-users', icon: Users },
-            { name: 'Manage Lawyers', href: '/dashboard/admin/all-transactions', icon: GrTransaction },
-            { name: 'Settings', href: '/dashboard/admin/analytics', icon: GrAnalytics },
+            { name: 'Transactions', href: '/dashboard/admin/all-transactions', icon: GrTransaction },
+            { name: 'Analytics', href: '/dashboard/admin/analytics', icon: GrAnalytics },
         ]
     };
 
