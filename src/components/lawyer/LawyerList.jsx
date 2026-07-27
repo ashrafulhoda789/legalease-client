@@ -143,7 +143,7 @@ export default function LawyerList({ lawyers = [], comments = [] }) {
                                         <div className="w-px h-3 bg-slate-700"></div>
                                         <div className="flex items-center gap-1 text-amber-400 font-semibold">
                                             <Star className="w-3.5 h-3.5 fill-amber-400" />
-                                            {comments?.rating || '0.0'}
+                                            {lawyer?.rating || '5.0'}
                                         </div>
                                     </div>
                                 </div>
