@@ -18,7 +18,7 @@ export const serverFetch = async (path, options = {}) => {
         ...options
     });
 
-    return res.json();
+    return HandleStatusCode(res);
 
 }
 
@@ -32,6 +32,17 @@ export const serverMutation = async (path, data, method = 'POST') => {
         body: JSON.stringify(data)
     });
 
+
+    return HandleStatusCode(res);
+}
+
+const HandleStatusCode = (res) => {
+    if (res.status === 401) {
+        redirect('/unauthorized')
+    }
+    else if (res.status === 403) {
+        redirect('/forbidden')
+    }
 
     return res.json();
 }
