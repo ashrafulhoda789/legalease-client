@@ -26,6 +26,13 @@ export default function ManageLegalProfile() {
 
     const fileInputRef = useRef(null);
 
+    const SPECIALIZATIONS = [
+        'Corporate & Tax',
+        'Criminal Law',
+        'Family & Property',
+        'Cyber & IP Law'
+    ];
+
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
@@ -311,15 +318,20 @@ export default function ManageLegalProfile() {
                             <label className="block text-xs font-medium text-slate-300 mb-1">
                                 Specialization
                             </label>
-                            <input
-                                type="text"
+                            <select
                                 name="specialization"
                                 value={formData.specialization}
                                 onChange={handleChange}
-                                placeholder="e.g. Corporate Law"
                                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition-colors"
                                 required
-                            />
+                            >
+                                <option value="" disabled>Select Specialization</option>
+                                {SPECIALIZATIONS.map((spec) => (
+                                    <option key={spec} value={spec} className="bg-slate-900 text-slate-200">
+                                        {spec}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
                         <div>

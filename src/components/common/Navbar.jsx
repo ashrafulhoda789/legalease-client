@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Scale, Search, Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import Image from 'next/image';
@@ -10,16 +10,18 @@ import Image from 'next/image';
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+    const searchParams = useSearchParams();
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+
     const pathname = usePathname();
     const router = useRouter();
 
-    // BetterAuth session integration
     const { data: session, isPending } = authClient.useSession();
     const user = session?.user;
 
     const isActive = (path) => pathname === path;
 
-    // 🎯 Role Based Dynamic Dashboard Route Generator
     const getDashboardPath = () => {
         const role = user?.role;
         if (role === 'lawyer') return '/dashboard/lawyer';
@@ -28,6 +30,16 @@ export default function Navbar() {
     };
 
     const dashboardPath = getDashboardPath();
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        if (searchTerm.trim()) {
+            router.push(`/lawyers?search=${encodeURIComponent(searchTerm.trim())}`);
+            setIsMenuOpen(false); // Mobile menu close on search
+        } else {
+            router.push('/lawyers');
+        }
+    };
 
     // Logout Functionality
     const handleLogout = async () => {
@@ -49,8 +61,7 @@ export default function Navbar() {
 
     return (
         <nav className="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
-            
-            <div className="max-w-350 mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
 
                     {/* Logo & Brand */}
@@ -69,42 +80,42 @@ export default function Navbar() {
                     <div className="hidden md:flex items-center space-x-6">
                         <Link
                             href="/"
-                            className={`transition-colors font-medium ${isActive('/') ? 'text-amber-500 font-semibold' : 'text-slate-300 hover:text-white'
-                                }`}
+                            className={`transition-colors font-medium ${isActive('/') ? 'text-amber-500 font-semibold' : 'text-slate-300 hover:text-white'}`}
                         >
                             Home
                         </Link>
                         <Link
                             href="/lawyers"
-                            className={`transition-colors font-medium ${isActive('/lawyers') ? 'text-amber-500 font-semibold' : 'text-slate-300 hover:text-white'
-                                }`}
+                            className={`transition-colors font-medium ${isActive('/lawyers') ? 'text-amber-500 font-semibold' : 'text-slate-300 hover:text-white'}`}
                         >
                             Browse Lawyers
                         </Link>
 
-                        {/* 🎯 Role-Based Dynamic Dashboard Link */}
+                        {/* Role-Based Dynamic Dashboard Link */}
                         {user && (
                             <Link
                                 href={dashboardPath}
                                 className={`transition-colors font-medium ${pathname.startsWith('/dashboard')
-                                        ? 'text-amber-500 font-semibold'
-                                        : 'text-slate-300 hover:text-white'
-                                    }`}
+                                    ? 'text-amber-500 font-semibold'
+                                    : 'text-slate-300 hover:text-white'}`}
                             >
                                 Dashboard
                             </Link>
                         )}
                     </div>
 
-                    {/* Global Search Bar */}
-                    <div className="hidden lg:flex items-center relative">
-                        <Search className="w-4 h-4 text-slate-400 absolute left-3" />
+                    <form onSubmit={handleSearchSubmit} className="hidden lg:flex items-center relative">
+                        <button type="submit" className="absolute left-3 text-slate-400 hover:text-amber-500">
+                            <Search className="w-4 h-4" />
+                        </button>
                         <input
                             type="text"
-                            placeholder="Search specialization..."
-                            className="bg-slate-800 border border-slate-700 text-slate-100 text-sm rounded-lg pl-9 pr-4 py-1.5 focus:outline-none focus:border-amber-500 placeholder:text-slate-400"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder="Search lawyer & enter ..."
+                            className="bg-slate-800 border border-slate-700 text-slate-100 text-sm rounded-lg pl-9 pr-4 py-1.5 focus:outline-none focus:border-amber-500 placeholder:text-slate-400 w-64 lg:w-80"
                         />
-                    </div>
+                    </form>
 
                     {/* Right Action Buttons */}
                     <div className="hidden md:flex items-center gap-3">
@@ -142,7 +153,6 @@ export default function Navbar() {
                                             </span>
                                         </div>
 
-                                        {/* 🎯 Role-Based Dashboard Link in Dropdown */}
                                         <Link
                                             href={dashboardPath}
                                             onClick={() => setIsProfileOpen(false)}
@@ -196,14 +206,20 @@ export default function Navbar() {
             {/* Mobile Drawer Menu */}
             {isMenuOpen && (
                 <div className="md:hidden bg-slate-900 border-b border-slate-800 px-4 pt-2 pb-4 space-y-3">
-                    <div className="relative mb-3">
-                        <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                    {/* 🎯 Mobile Global Search Bar */}
+                    <form onSubmit={handleSearchSubmit} className="relative mb-3">
+                        <button type="submit" className="absolute left-3 top-2.5 text-slate-400 hover:text-amber-500">
+                            <Search className="w-4 h-4" />
+                        </button>
                         <input
                             type="text"
-                            placeholder="Search specialization..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder="Search lawyer name or specialization..."
                             className="w-full bg-slate-800 border border-slate-700 text-slate-100 text-sm rounded-lg pl-9 pr-4 py-2 focus:outline-none focus:border-amber-500"
                         />
-                    </div>
+                    </form>
+
                     <Link
                         href="/"
                         onClick={() => setIsMenuOpen(false)}
@@ -219,13 +235,11 @@ export default function Navbar() {
                         Browse Lawyers
                     </Link>
 
-                    {/* 🎯 Mobile Role-Based Dashboard Link */}
                     {user && (
                         <Link
                             href={dashboardPath}
                             onClick={() => setIsMenuOpen(false)}
-                            className={`block py-2 ${pathname.startsWith('/dashboard') ? 'text-amber-500 font-bold' : 'text-slate-200'
-                                }`}
+                            className={`block py-2 ${pathname.startsWith('/dashboard') ? 'text-amber-500 font-bold' : 'text-slate-200'}`}
                         >
                             Dashboard
                         </Link>

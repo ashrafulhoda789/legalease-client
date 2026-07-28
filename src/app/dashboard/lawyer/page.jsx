@@ -48,7 +48,7 @@ export default function LawyerDashboardPage() {
                 const lawyerProfileData = profileRes?.data || profileRes;
                 setProfile(lawyerProfileData);
 
-                // ২. Lawyer ID পাওয়া গেলে Comments/Reviews লোড করা
+                // ২. Lawyer ID পাওয়া গেলে Comments/Reviews লোড করা
                 const lawyerId = lawyerProfileData?._id || lawyerProfileData?.id;
                 if (lawyerId) {
                     const commentsRes = await getCommentsForSpecificLawyer(lawyerId);
@@ -83,7 +83,7 @@ export default function LawyerDashboardPage() {
 
     // ৩. Profile Completion
     const calculateProfileCompletion = () => {
-        let score = 20; 
+        let score = 20;
         if (profile) {
             if (profile.title || profile.specialization) score += 20;
             if (profile.chamberAddress || profile.location) score += 20;
@@ -134,7 +134,7 @@ export default function LawyerDashboardPage() {
         }
     ];
 
-    const recentRequests = hiringRequests.slice(0, 3); // সেরা ৩টি রিসেন্ট রিকুয়েস্ট
+    const recentRequests = hiringRequests.slice(0, 3); // সেরা ৩টি রিসেন্ট রিকুয়েস্ট
 
     if (loading) {
         return (

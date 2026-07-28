@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import { Scale, Eye, EyeOff, User, Mail, Lock, UserCheck, Briefcase } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
-
+import Swal from 'sweetalert2';
 
 export default function SignUpPage() {
     const router = useRouter();
@@ -48,33 +48,43 @@ export default function SignUpPage() {
         setShowRoleModal(true);
     };
 
-    // Step 2: BetterAuth Signup Execution
     const handleFinalRegister = async () => {
         setLoading(true);
         setError('');
 
         try {
-            // console.log("Submitting to BetterAuth...", {
-            //     email: formData.email,
-            //     name: formData.name,
-            //     role: selectedRole
-            // });
-
-            // BetterAuth signUp.email call
-            const { data, error } = await authClient.signUp.email({
+            await authClient.signUp.email({
                 email: formData.email,
                 password: formData.password,
                 name: formData.name,
-                requestedRole: selectedRole, // custom schema required on backend
+                requestedRole: selectedRole,
             }, {
                 onRequest: () => {
                     setLoading(true);
                 },
-                onSuccess: () => {
+                onSuccess: async () => {
                     setLoading(false);
                     setShowRoleModal(false);
-                    router.push('/');
-                    router.refresh();
+
+                    if (selectedRole === 'lawyer') {
+                        Swal.fire({
+                            title: 'Registration Successful!',
+                            text: 'Fill your all info in your Dashboard to register as a lawyer',
+                            icon: 'info',
+                            confirmButtonText: 'Go to Manage Profile',
+                            confirmButtonColor: '#f59e0b',
+                            background: '#0f172a',
+                            color: '#f8fafc',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                router.push('/dashboard/lawyer/manage-legal-profile');
+                            }
+                        });
+                    } else {
+                        
+                        router.push('/');
+                        router.refresh();
+                    }
                 },
                 onError: (ctx) => {
                     setLoading(false);
@@ -83,16 +93,7 @@ export default function SignUpPage() {
                 }
             });
 
-            // Fallback if callbacks aren't used:
-            if (error) {
-                // console.error("BetterAuth Error:", error);
-                setError(error.message || "Registration failed.");
-                setLoading(false);
-                setShowRoleModal(false);
-            }
-
         } catch (err) {
-            // console.error("Catch Block Error:", err);
             setError("An unexpected error occurred. Please check network/console.");
             setShowRoleModal(false);
             setLoading(false);

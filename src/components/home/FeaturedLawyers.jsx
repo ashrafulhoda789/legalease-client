@@ -30,6 +30,8 @@ export default function FeaturedLawyers() {
         fetchFeaturedLawyers();
     }, []);
 
+    // console.log(lawyers);
+
     // Framer Motion Parent Stagger Container Variants
     const containerVariants = {
         hidden: { opacity: 0 },
