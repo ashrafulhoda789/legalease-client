@@ -1,7 +1,11 @@
 import { serverFetch } from "../core/server";
 
-export const getLawyers = async () => {
-    return serverFetch('/api/lawyers');
+export const getLawyers = async (queryString = '') => {
+    return serverFetch(`/api/lawyers?${queryString}`,
+        {
+            cache: 'no-store'
+        }
+    );
 }
 
 export const getLawyersById = async (lawyerId) => {

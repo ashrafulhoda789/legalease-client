@@ -1,59 +1,47 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, Filter, Star, DollarSign, ShieldAlert, ArrowRight } from 'lucide-react';
-import { authClient } from '@/lib/auth-client';
 import Link from 'next/link';
 import Pagination from '../common/Pagination';
 
-export default function LawyerList({ lawyers = [], comments = [] }) {
+export default function LawyerList({ lawyers = [], total = 0, totalPages = 1, initialFilters }) {
     const router = useRouter();
-    const { data: session } = authClient.useSession();
+    const searchParams = useSearchParams();
 
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('All');
-
-    const [currentPage, setCurrentPage] = useState(1);
-    const ITEMS_PER_PAGE = 8;
-
-    const lawyerArray = Array.isArray(lawyers)
-        ? lawyers
-        : (Array.isArray(lawyers?.data) ? lawyers.data : []);
-
-    const filteredLawyers = lawyerArray.filter((lawyer) => {
-        const name = lawyer?.name || lawyer?.user?.name || '';
-        const specialization = lawyer?.specialization || lawyer?.profile?.specialization || '';
-
-        const matchesSearch =
-            name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            specialization.toLowerCase().includes(searchQuery.toLowerCase());
-
-        const matchesCategory =
-            selectedCategory === 'All' || specialization.toLowerCase().includes(selectedCategory.toLowerCase());
-
-        return matchesSearch && matchesCategory;
-    });
+    const [searchQuery, setSearchQuery] = useState(initialFilters.search);
+    const [selectedCategory, setSelectedCategory] = useState(initialFilters.category);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setCurrentPage(1);
+        const params = new URLSearchParams(searchParams.toString());
+
+        if (searchQuery) {
+            params.set('search', searchQuery);
+        } else {
+            params.delete('search');
+        }
+
+        if (selectedCategory && selectedCategory !== 'All') {
+            params.set('category', selectedCategory);
+        } else {
+            params.delete('category');
+        }
+
+        params.set('page', '1');
+
+        const queryString = params.toString();
+        router.push(`?${queryString}`, { scroll: false });
     }, [searchQuery, selectedCategory]);
 
-    // Pagination Calculations
-    const totalItems = filteredLawyers.length;
-    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const paginatedLawyers = filteredLawyers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
-    const handlePageChange = (page) => {
-        if (page >= 1 && page <= totalPages) {
-            setCurrentPage(page);
-            // স্মুথ স্ক্রোল করে পেজের উপরে নিয়ে যাওয়ার জন্য
-            window.scrollTo({ top: 200, behavior: 'smooth' });
-        }
+    const handlePageChange = (newPage) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('page', newPage.toString());
+        router.push(`?${params.toString()}`);
+        window.scrollTo({ top: 200, behavior: 'smooth' });
     };
+
+    const currentPage = Number(searchParams.get('page')) || 1;
 
     return (
         <div className="space-y-8">
@@ -90,7 +78,7 @@ export default function LawyerList({ lawyers = [], comments = [] }) {
             </div>
 
             {/* Empty State Handler */}
-            {filteredLawyers.length === 0 ? (
+            {lawyers.length === 0 ? (
                 <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-12 text-center space-y-4 max-w-lg mx-auto my-12">
                     <div className="w-16 h-16 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto">
                         <ShieldAlert className="w-8 h-8" />
@@ -103,6 +91,7 @@ export default function LawyerList({ lawyers = [], comments = [] }) {
                         onClick={() => {
                             setSearchQuery('');
                             setSelectedCategory('All');
+                            router.push('/lawyers');
                         }}
                         className="bg-amber-600 hover:bg-amber-700 text-white font-medium text-sm px-5 py-2 rounded-xl transition-colors cursor-pointer"
                     >
@@ -113,7 +102,7 @@ export default function LawyerList({ lawyers = [], comments = [] }) {
                 <>
                     {/* Responsive Grid View */}
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                        {paginatedLawyers.map((lawyer) => {
+                        {lawyers.map((lawyer) => {
                             const targetId = lawyer?._id || lawyer?.user?._id;
                             const name = lawyer?.name || lawyer?.user?.name || 'Unnamed Lawyer';
                             const avatarSrc = lawyer?.photoUrl || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=250';
@@ -127,7 +116,6 @@ export default function LawyerList({ lawyers = [], comments = [] }) {
                                     key={targetId}
                                     className="group bg-slate-900 border border-slate-800 hover:border-amber-500/50 rounded-2xl p-4 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/5 cursor-pointer relative overflow-hidden"
                                 >
-                                    {/* Busy Badge */}
                                     {isBusy && (
                                         <div className="absolute top-3 right-3 bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full z-10">
                                             Busy
@@ -135,7 +123,6 @@ export default function LawyerList({ lawyers = [], comments = [] }) {
                                     )}
 
                                     <div className="space-y-3 text-center">
-                                        {/* Avatar Image */}
                                         <div className="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto">
                                             <img
                                                 src={avatarSrc}
@@ -144,7 +131,6 @@ export default function LawyerList({ lawyers = [], comments = [] }) {
                                             />
                                         </div>
 
-                                        {/* Name & Specialization */}
                                         <div>
                                             <h3 className="font-bold text-sm sm:text-base text-white group-hover:text-amber-400 transition-colors line-clamp-1">
                                                 {name}
@@ -154,7 +140,6 @@ export default function LawyerList({ lawyers = [], comments = [] }) {
                                             </p>
                                         </div>
 
-                                        {/* Consultation Fee & Rating */}
                                         <div className="bg-slate-800/60 rounded-xl p-2 flex items-center justify-around text-xs border border-slate-800">
                                             <div className="flex items-center gap-1 text-slate-300">
                                                 <DollarSign className="w-3.5 h-3.5 text-amber-500" />
@@ -168,7 +153,6 @@ export default function LawyerList({ lawyers = [], comments = [] }) {
                                         </div>
                                     </div>
 
-                                    {/* Action Buttons Section */}
                                     <div className="mt-4 space-y-2 pt-2 border-t border-slate-800/80">
                                         <Link
                                             href={`/lawyers/${lawyer?.email || lawyer?.user?.email || targetId}`}
@@ -186,11 +170,11 @@ export default function LawyerList({ lawyers = [], comments = [] }) {
                         })}
                     </div>
 
+                    {/* Pagination */}
                     <Pagination
                         currentPage={currentPage}
                         totalPages={totalPages}
                         onPageChange={handlePageChange}
-                        isUrlBased={false}
                     />
                 </>
             )}
