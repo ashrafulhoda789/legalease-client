@@ -25,7 +25,7 @@ export default function Navbar() {
     const getDashboardPath = () => {
         const role = user?.role;
         if (role === 'lawyer') return '/dashboard/lawyer';
-        if (role === 'admin') return '/dashboard/admin/manage-users';
+        if (role === 'admin') return '/dashboard/admin/analytics';
         return '/dashboard/user';
     };
 
