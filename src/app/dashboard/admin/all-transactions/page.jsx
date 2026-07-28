@@ -10,11 +10,14 @@ import {
     CheckCircle2
 } from 'lucide-react';
 import { getAllPayments } from '@/lib/api/payments';
-
-export default async function AllTransactionsPage() {
+import Pagination from '@/components/common/Pagination'; 
+export default async function AllTransactionsPage({ searchParams }) {
+  
+    const params = await searchParams;
+    const currentPage = Number(params?.page) || 1;
+    const limit = 4; 
 
     const rawData = await getAllPayments();
-
 
     const transactions = Array.isArray(rawData)
         ? rawData
@@ -23,6 +26,14 @@ export default async function AllTransactionsPage() {
             : [];
 
     const totalRevenue = transactions.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+
+    // Pagination Calculation
+    const totalTransactions = transactions.length;
+    const totalPages = Math.max(1, Math.ceil(totalTransactions / limit));
+
+    // বর্তমান পেজের জন্য স্লাইস করা ডাটা
+    const startIndex = (currentPage - 1) * limit;
+    const paginatedTransactions = transactions.slice(startIndex, startIndex + limit);
 
     return (
         <div className="space-y-6 w-full max-w-350 mx-auto px-4 sm:px-6 py-6">
@@ -63,7 +74,7 @@ export default async function AllTransactionsPage() {
                 <>
                     {/* Mobile Card View (For small screens) */}
                     <div className="grid grid-cols-1 gap-4 md:hidden">
-                        {transactions.map((tx) => (
+                        {paginatedTransactions.map((tx) => (
                             <div
                                 key={tx._id || tx.transactionId}
                                 className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-lg"
@@ -138,7 +149,7 @@ export default async function AllTransactionsPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-800/60">
-                                    {transactions.map((tx) => (
+                                    {paginatedTransactions.map((tx) => (
                                         <tr key={tx._id || tx.transactionId} className="hover:bg-slate-800/30 transition-colors">
                                             {/* Transaction ID */}
                                             <td className="py-4 px-6 font-mono text-xs text-amber-500 font-medium">
@@ -162,7 +173,6 @@ export default async function AllTransactionsPage() {
                                             <td className="py-4 px-6 text-slate-200">
                                                 <div className="flex flex-col">
                                                     <span className="font-medium">{tx.lawyerName || 'Lawyer'}</span>
-                                                    
                                                 </div>
                                             </td>
 
@@ -190,6 +200,12 @@ export default async function AllTransactionsPage() {
                             </table>
                         </div>
                     </div>
+
+                    {/* Pagination Component */}
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                    />
                 </>
             )}
         </div>

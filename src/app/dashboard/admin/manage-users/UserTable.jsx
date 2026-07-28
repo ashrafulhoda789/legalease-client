@@ -1,15 +1,20 @@
 "use client";
 
 import { deleteUser, updateUserRole } from "@/lib/action/users";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function UserTable({ initialUsers = [] }) {
+export default function UserTable({ initialUsers = [], currentPage = 1, limit = 10 }) {
     const [users, setUsers] = useState(initialUsers);
     const [loadingId, setLoadingId] = useState(null);
 
     // Modal State
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setUsers(initialUsers);
+    }, [initialUsers]);
 
     // 1. Handle Role Change
     const handleRoleChange = async (userId, newRole) => {
@@ -70,7 +75,7 @@ export default function UserTable({ initialUsers = [] }) {
                     <div>
                         <h2 className="text-lg sm:text-xl font-bold text-white">All Users</h2>
                         <p className="text-xs text-slate-400 mt-0.5 sm:mt-1">
-                            Total {users.length} registered users found
+                            Showing {users.length} users on page {currentPage}
                         </p>
                     </div>
                 </div>
@@ -88,6 +93,8 @@ export default function UserTable({ initialUsers = [] }) {
                                 const userId = user.id || user._id;
                                 const userRole = user.role || "user";
                                 const isProcessing = loadingId === userId;
+                                // dynamic index for pagination
+                                const serialNumber = (currentPage - 1) * limit + index + 1;
 
                                 return (
                                     <div
@@ -110,7 +117,7 @@ export default function UserTable({ initialUsers = [] }) {
                                                 </div>
                                             </div>
                                             <span className="text-xs font-mono text-slate-500 font-medium">
-                                                #{index + 1}
+                                                #{serialNumber}
                                             </span>
                                         </div>
 
@@ -120,10 +127,10 @@ export default function UserTable({ initialUsers = [] }) {
                                                 <span className="text-[11px] text-slate-400 block">Current Role</span>
                                                 <span
                                                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize border ${userRole === "admin"
-                                                            ? "bg-purple-950/60 text-purple-300 border-purple-800/60"
-                                                            : userRole === "lawyer"
-                                                                ? "bg-blue-950/60 text-blue-300 border-blue-800/60"
-                                                                : "bg-emerald-950/60 text-emerald-300 border-emerald-800/60"
+                                                        ? "bg-purple-950/60 text-purple-300 border-purple-800/60"
+                                                        : userRole === "lawyer"
+                                                            ? "bg-blue-950/60 text-blue-300 border-blue-800/60"
+                                                            : "bg-emerald-950/60 text-emerald-300 border-emerald-800/60"
                                                         }`}
                                                 >
                                                     {userRole}
@@ -174,6 +181,8 @@ export default function UserTable({ initialUsers = [] }) {
                                         const userId = user.id || user._id;
                                         const userRole = user.role || "user";
                                         const isProcessing = loadingId === userId;
+                                        // dynamic index for pagination
+                                        const serialNumber = (currentPage - 1) * limit + index + 1;
 
                                         return (
                                             <tr
@@ -182,7 +191,7 @@ export default function UserTable({ initialUsers = [] }) {
                                             >
                                                 {/* Index */}
                                                 <td className="py-4 px-6 text-center font-medium text-slate-500">
-                                                    {index + 1}
+                                                    {serialNumber}
                                                 </td>
 
                                                 {/* Name & Email */}
@@ -204,10 +213,10 @@ export default function UserTable({ initialUsers = [] }) {
                                                 <td className="py-4 px-6">
                                                     <span
                                                         className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium capitalize border ${userRole === "admin"
-                                                                ? "bg-purple-950/60 text-purple-300 border-purple-800/60"
-                                                                : userRole === "lawyer"
-                                                                    ? "bg-blue-950/60 text-blue-300 border-blue-800/60"
-                                                                    : "bg-emerald-950/60 text-emerald-300 border-emerald-800/60"
+                                                            ? "bg-purple-950/60 text-purple-300 border-purple-800/60"
+                                                            : userRole === "lawyer"
+                                                                ? "bg-blue-950/60 text-blue-300 border-blue-800/60"
+                                                                : "bg-emerald-950/60 text-emerald-300 border-emerald-800/60"
                                                             }`}
                                                     >
                                                         {userRole}

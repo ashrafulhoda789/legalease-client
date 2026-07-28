@@ -1,24 +1,36 @@
 import { Calendar, Clock } from 'lucide-react';
 import HiringActionButtons from '@/components/dashboard/HiringActionButtons';
+import Pagination from '@/components/common/Pagination'; 
 import { getHiringRequest } from '@/lib/api/hiring-request';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 
-export default async function HiringHistoryPage() {
+export default async function HiringHistoryPage({ searchParams }) {
+    
+    const params = await searchParams;
+    const currentPage = Number(params?.page) || 1;
+    const ITEMS_PER_PAGE = 10; 
 
     const session = await auth.api.getSession({
         headers: await headers()
     });
     const userEmail = session?.user?.email;
 
-    let requests = [];
+    let allRequests = [];
 
     if (userEmail) {
         const res = await getHiringRequest(userEmail);
         if (res?.success) {
-            requests = res.data || [];
+            allRequests = res.data || [];
         }
     }
+
+    // 2. Pagination Calculation
+    const totalItems = allRequests.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
+
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const requests = allRequests.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
     return (
         <div className="p-3 sm:p-6 max-w-350 mx-auto space-y-4 sm:space-y-6">
@@ -29,11 +41,11 @@ export default async function HiringHistoryPage() {
             </div>
 
             <div className="bg-slate-900 border border-slate-800 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl">
-                {requests.length === 0 ? (
+                {allRequests.length === 0 ? (
                     <div className="p-6 text-center text-slate-500 text-xs sm:text-sm">No hiring requests found.</div>
                 ) : (
                     <>
-                        {/* 1. Mobile Card Layout (Specifically optimized for 375px & smaller screens) */}
+                        {/* 1. Mobile Card Layout */}
                         <div className="block md:hidden divide-y divide-slate-800">
                             {requests.map((item) => (
                                 <div key={item._id} className="p-3.5 space-y-3">
@@ -88,7 +100,7 @@ export default async function HiringHistoryPage() {
                             ))}
                         </div>
 
-                        {/* 2. Desktop Table Layout (Visible on md+ screens) */}
+                        {/* 2. Desktop Table Layout */}
                         <div className="hidden md:block overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
@@ -148,6 +160,16 @@ export default async function HiringHistoryPage() {
                     </>
                 )}
             </div>
+
+            {/* 3. Pagination Component */}
+            {allRequests.length > 0 && (
+                <div className="pt-2">
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                    />
+                </div>
+            )}
         </div>
     );
 }
