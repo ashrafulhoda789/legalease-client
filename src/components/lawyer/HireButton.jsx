@@ -40,7 +40,6 @@ export default function HireButton({ lawyer, lawyerId }) {
                 consultationFee: lawyer?.consultationFee || 0,
             };
 
-            // 🚀 Direct call to your Server Action
             const res = await createHireRequest(payload);
 
             if (res?.success || res?.insertedId) {

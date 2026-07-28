@@ -5,7 +5,7 @@ import UserTable from "./UserTable";
 export default async function UsersPage() {
 
     const res = await getUserList();
-    console.log(res.users);
+    // console.log(res.users);
 
     return (
         <div className="p-6 max-w-350">

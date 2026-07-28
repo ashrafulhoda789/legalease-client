@@ -39,9 +39,9 @@ export default function DashboardSidebar() {
             { name: 'Manage Legal Profile', href: '/dashboard/lawyer/manage-legal-profile', icon: Briefcase },
         ],
         admin: [
+            { name: 'Analytics', href: '/dashboard/admin/analytics', icon: GrAnalytics },
             { name: 'Manage Users', href: '/dashboard/admin/manage-users', icon: Users },
             { name: 'Transactions', href: '/dashboard/admin/all-transactions', icon: GrTransaction },
-            { name: 'Analytics', href: '/dashboard/admin/analytics', icon: GrAnalytics },
         ]
     };
 
@@ -65,8 +65,8 @@ export default function DashboardSidebar() {
                 onMouseEnter={() => setIsExpanded(true)}
                 onMouseLeave={() => setIsExpanded(false)}
                 className={`fixed lg:sticky top-16 left-0 z-40 h-[calc(100vh-4rem)] flex flex-col justify-between shrink-0 transition-all duration-300 ease-in-out select-none lg:w-64 lg:bg-slate-900 lg:border-r lg:border-slate-800 lg:p-4 ${isExpanded
-                        ? 'w-64 bg-slate-900/95 border-r border-slate-800 p-4 shadow-2xl backdrop-blur-md'
-                        : 'w-12 bg-slate-900/80 border-r border-slate-800/60 p-2'
+                    ? 'w-64 bg-slate-900/95 border-r border-slate-800 p-4 shadow-2xl backdrop-blur-md'
+                    : 'w-12 bg-slate-900/80 border-r border-slate-800/60 p-2'
                     }`}
             >
                 <div className="space-y-6 overflow-hidden">
@@ -95,8 +95,8 @@ export default function DashboardSidebar() {
                                     href={item.href}
                                     onClick={() => setIsExpanded(false)}
                                     className={`flex items-center gap-3.5 px-2 py-2.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${isActive
-                                            ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/10'
-                                            : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                                        ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/10'
+                                        : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
                                         }`}
                                 >
                                     <Icon
