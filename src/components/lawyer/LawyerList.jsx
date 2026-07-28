@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Filter, Star, DollarSign, ShieldAlert, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, Star, DollarSign, ShieldAlert, ArrowRight } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import Link from 'next/link';
+import Pagination from '../common/Pagination';
 
 export default function LawyerList({ lawyers = [], comments = [] }) {
     const router = useRouter();
@@ -13,11 +14,9 @@ export default function LawyerList({ lawyers = [], comments = [] }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
 
-   
     const [currentPage, setCurrentPage] = useState(1);
-    const ITEMS_PER_PAGE = 10;
+    const ITEMS_PER_PAGE = 8;
 
-   
     const lawyerArray = Array.isArray(lawyers)
         ? lawyers
         : (Array.isArray(lawyers?.data) ? lawyers.data : []);
@@ -41,7 +40,7 @@ export default function LawyerList({ lawyers = [], comments = [] }) {
         setCurrentPage(1);
     }, [searchQuery, selectedCategory]);
 
-    // 3. Pagination Calculations
+    // Pagination Calculations
     const totalItems = filteredLawyers.length;
     const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
@@ -51,7 +50,7 @@ export default function LawyerList({ lawyers = [], comments = [] }) {
     const handlePageChange = (page) => {
         if (page >= 1 && page <= totalPages) {
             setCurrentPage(page);
-            // স্মুথ স্ক্রোল করে গ্রিডের শুরুতে নিয়ে যাওয়ার জন্য
+            // স্মুথ স্ক্রোল করে পেজের উপরে নিয়ে যাওয়ার জন্য
             window.scrollTo({ top: 200, behavior: 'smooth' });
         }
     };
@@ -187,47 +186,12 @@ export default function LawyerList({ lawyers = [], comments = [] }) {
                         })}
                     </div>
 
-                    {/* 4. Pagination Navigation Bar */}
-                    {totalPages > 1 && (
-                        <div className="flex items-center justify-center gap-2 pt-6">
-                            {/* Previous Button */}
-                            <button
-                                onClick={() => handlePageChange(currentPage - 1)}
-                                disabled={currentPage === 1}
-                                className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                            >
-                                <ChevronLeft className="w-5 h-5" />
-                            </button>
-
-                            {/* Page Numbers */}
-                            <div className="flex items-center gap-1 sm:gap-2">
-                                {Array.from({ length: totalPages }, (_, index) => {
-                                    const pageNumber = index + 1;
-                                    return (
-                                        <button
-                                            key={pageNumber}
-                                            onClick={() => handlePageChange(pageNumber)}
-                                            className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-colors ${currentPage === pageNumber
-                                                    ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20'
-                                                    : 'bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800'
-                                                }`}
-                                        >
-                                            {pageNumber}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-
-                            {/* Next Button */}
-                            <button
-                                onClick={() => handlePageChange(currentPage + 1)}
-                                disabled={currentPage === totalPages}
-                                className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                            >
-                                <ChevronRight className="w-5 h-5" />
-                            </button>
-                        </div>
-                    )}
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                        isUrlBased={false}
+                    />
                 </>
             )}
         </div>

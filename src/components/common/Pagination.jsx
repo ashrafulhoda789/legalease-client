@@ -7,8 +7,8 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 export default function Pagination({
     currentPage = 1,
     totalPages = 1,
-    onPageChange, // যদি Client State ব্যবহার করেন
-    isUrlBased = true, // URL SearchParams Update করার জন্য
+    onPageChange,
+    isUrlBased = true, 
 }) {
     const router = useRouter();
     const pathname = usePathname();

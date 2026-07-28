@@ -15,7 +15,7 @@ export default async function AllTransactionsPage({ searchParams }) {
   
     const params = await searchParams;
     const currentPage = Number(params?.page) || 1;
-    const limit = 4; 
+    const limit = 10; 
 
     const rawData = await getAllPayments();
 
