@@ -1,7 +1,7 @@
 import React from "react";
 import { Users, Scale, Briefcase, DollarSign, ArrowRight, UsersIcon } from "lucide-react";
 import { getUserList } from "@/lib/api/users";
-import { getLawyers } from "@/lib/api/lawyers";
+import {  getLawyers } from "@/lib/api/lawyers";
 import { getAllPayments } from "@/lib/api/payments";
 import Link from "next/link";
 import { GrTransaction } from "react-icons/gr";
@@ -14,8 +14,10 @@ export default async function AnalyticsPage() {
     ]);
 
     const users = Array.isArray(userData) ? userData : userData?.users || [];
-    const lawyers = Array.isArray(lawyersData) ? lawyersData : lawyersData?.data || [];
+    const lawyers = users.filter((user) => user.role === 'lawyer');
     const payments = Array.isArray(paymentsData) ? paymentsData : paymentsData?.data || [];
+
+    // console.log("lawyers", lawyers);
 
     const totalUsers = users.length;
     const totalLawyers = lawyers.length;

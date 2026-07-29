@@ -1,4 +1,4 @@
-import { protectedFetch, serverFetch } from "../core/server";
+import { serverFetch } from "../core/server";
 
 export const getComments = async (email) => {
     if (!email) return { success: false, data: [] };
@@ -6,7 +6,7 @@ export const getComments = async (email) => {
 };
 
 export const getCommentsForSpecificLawyer = async(lawyerId) =>{
-    return protectedFetch(`/api/comments/lawyer/${lawyerId}`)
+    return serverFetch(`/api/comments/lawyer/${lawyerId}`)
 }
 
 export const checkHiringStatus = async (email, lawyerId) => {

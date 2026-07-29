@@ -20,7 +20,7 @@ async function checkIfUserHiredLawyer(lawyerId, userEmail, reqHeaders) {
 
         return Boolean(res?.isHired);
     } catch (error) {
-        console.error('Error checking hire status:', error);
+        // console.error('Error checking hire status:', error);
         return false;
     }
 }
@@ -38,7 +38,7 @@ export default async function LawyerDetailsPage({ params }) {
     try {
         lawyer = await getLawyersById(lawyerId);
     } catch (error) {
-        console.error('Failed to fetch lawyer:', error);
+        // console.error('Failed to fetch lawyer:', error);
     }
 
     if (!lawyer || lawyer.message) {

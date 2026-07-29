@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { getUserToken } from "./session";
 
 
@@ -23,16 +24,6 @@ export const serverFetch = async (path, options = {}) => {
 
 }
 
-export const protectedFetch = async (path, options = {}) => {
-    const res = await fetch(`${baseUrl}${path}`, {
-        cache: 'no-store',
-        ...options,
-        headers: await authHeader()
-    });
-
-
-    return HandleStatusCode(res);
-}
 
 export const serverMutation = async (path, data, method = 'POST') => {
     const res = await fetch(`${baseUrl}${path}`, {

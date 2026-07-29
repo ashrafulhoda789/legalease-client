@@ -9,6 +9,8 @@ export const getUserSession = async () => {
         headers: await headers()
     })
 
+    // console.log('session', session);
+
     return session?.user || null;
 }
 
