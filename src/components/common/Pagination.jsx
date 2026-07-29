@@ -14,7 +14,6 @@ export default function Pagination({
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    // পেজ নম্বর পরিবর্তন করার হ্যান্ডলার
     const handlePageChange = (page) => {
         if (page < 1 || page > totalPages || page === currentPage) return;
 

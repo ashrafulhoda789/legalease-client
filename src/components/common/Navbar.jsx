@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Scale, Search, Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import Image from 'next/image';
 
-export default function Navbar() {
+function NavbarContent() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -206,7 +206,7 @@ export default function Navbar() {
             {/* Mobile Drawer Menu */}
             {isMenuOpen && (
                 <div className="md:hidden bg-slate-900 border-b border-slate-800 px-4 pt-2 pb-4 space-y-3">
-                    {/* 🎯 Mobile Global Search Bar */}
+                    {/* Mobile Global Search Bar */}
                     <form onSubmit={handleSearchSubmit} className="relative mb-3">
                         <button type="submit" className="absolute left-3 top-2.5 text-slate-400 hover:text-amber-500">
                             <Search className="w-4 h-4" />
@@ -281,5 +281,18 @@ export default function Navbar() {
                 </div>
             )}
         </nav>
+    );
+}
+
+export default function Navbar() {
+    return (
+        <Suspense fallback={
+            <nav className="bg-slate-900 border-b border-slate-800 h-16 sticky top-0 z-50 flex items-center justify-between px-4 sm:px-8">
+                <div className="bg-amber-600/20 w-32 h-6 animate-pulse rounded"></div>
+                <div className="bg-slate-800 w-48 h-8 animate-pulse rounded-lg"></div>
+            </nav>
+        }>
+            <NavbarContent />
+        </Suspense>
     );
 }
