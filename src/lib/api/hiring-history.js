@@ -1,7 +1,7 @@
-import { serverFetch } from "../core/server";
+import { protectedFetch } from "../core/server";
 
 export const getHiringHistory = async (userEmail) => {
    
     const query = userEmail ? `?email=${encodeURIComponent(userEmail)}` : '';
-    return serverFetch(`/api/hiring-history${query}`);
+    return protectedFetch(`/api/hiring-history${query}`);
 };

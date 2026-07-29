@@ -1,5 +1,5 @@
-import { serverFetch } from "../core/server";
+import { protectedFetch, serverFetch } from "../core/server";
 
 export const getHiringRequest = async (userEmail) => {
-    return serverFetch(`/api/lawyer/hiring-requests?email=${encodeURIComponent(userEmail)}`);
+    return protectedFetch(`/api/lawyer/hiring-requests?email=${encodeURIComponent(userEmail)}`);
 }

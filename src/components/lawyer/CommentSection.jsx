@@ -8,6 +8,7 @@ import { authClient } from '@/lib/auth-client';
 import { createComment } from '@/lib/action/comments';
 import { getCommentsForSpecificLawyer } from '@/lib/api/comments';
 import { getCheckHiring } from '@/lib/api/check-hiring';
+import Image from 'next/image';
 
 
 export default function CommentSection({ lawyerId, initialComments = [], isHired: initialIsHired }) {
@@ -68,7 +69,7 @@ export default function CommentSection({ lawyerId, initialComments = [], isHired
             }
 
             try {
-        
+
                 const data = await getCheckHiring(lawyerId, currentUser.email);
 
                 if (data?.isHired || (data?.success && data?.isHired)) {
@@ -146,8 +147,15 @@ export default function CommentSection({ lawyerId, initialComments = [], isHired
         <div className="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 space-y-2">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold text-xs border border-amber-500/20">
-                        {comment.userName ? comment.userName.charAt(0).toUpperCase() : <User className="w-4 h-4" />}
+                    <div className="relative w-11 h-11 rounded-full overflow-hidden bg-slate-800 border border-slate-700 shrink-0 flex items-center justify-center">
+                        {comment.userPhoto ? (
+                            <Image
+                                src={comment.userPhoto}
+                                alt={comment.userName.charAt(0).toUpperCase()}
+                                fill
+                                className="object-cover w-5 h-5"
+                            />
+                        ) : (<User className="w-4 h-4" />)}
                     </div>
                     <div>
                         <span className="text-sm font-semibold text-white block">

@@ -109,11 +109,11 @@ export default function UserCommentsPage() {
                 setComments((prev) => prev.filter((c) => c._id !== selectedComment._id));
                 setDeleteModalOpen(false);
             } else {
-                alert(res.message || 'Failed to delete comment');
+                // alert(res.message || 'Failed to delete comment');
             }
         } catch (error) {
-            console.error('Error deleting comment:', error);
-            alert('An error occurred while deleting.');
+            // console.error('Error deleting comment:', error);
+            // alert('An error occurred while deleting.');
         } finally {
             setActionLoading(false);
         }
@@ -148,11 +148,11 @@ export default function UserCommentsPage() {
                 /* Card Grid View */
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {comments.map((item) => {
-                        // লয়ারের অবজেক্ট ডেটা খুঁজে বের করা (API structured response অনুযায়ী)
+                        
                         const lawyer = item.lawyerDetails || item.lawyerInfo || {};
-                        const lawyerName = lawyer.name || item.lawyerName || 'Lawyer Profile';
-                        const lawyerImage = lawyer.image || lawyer.avatar || item.lawyerImage;
-                        const lawyerSpeciality = lawyer.specialization || lawyer.category || 'Legal Specialist';
+                        const lawyerName = lawyer.name || 'Lawyer Profile';
+                        const lawyerImage = lawyer.photoUrl;
+                        const lawyerSpeciality = lawyer?.specialization || lawyer.category || 'Legal Specialist';
                         const lawyerId = item.lawyerId || lawyer._id;
 
                         return (

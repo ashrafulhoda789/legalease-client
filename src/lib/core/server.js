@@ -1,5 +1,6 @@
 import { getUserToken } from "./session";
 
+
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const authHeader = async () => {
@@ -20,6 +21,17 @@ export const serverFetch = async (path, options = {}) => {
 
     return HandleStatusCode(res);
 
+}
+
+export const protectedFetch = async (path, options = {}) => {
+    const res = await fetch(`${baseUrl}${path}`, {
+        cache: 'no-store',
+        ...options,
+        headers: await authHeader()
+    });
+
+
+    return HandleStatusCode(res);
 }
 
 export const serverMutation = async (path, data, method = 'POST') => {
