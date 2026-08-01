@@ -32,7 +32,7 @@ export default function TopLegalExperts() {
             {/* Background Accent glow */}
             <div className="absolute -top-24 -left-24 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="max-w-350 mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
                 {/* Section Title */}
                 <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">

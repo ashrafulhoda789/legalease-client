@@ -106,7 +106,7 @@ export default function LegalCategories() {
 
     return (
         <section className="py-20 bg-slate-900 relative">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-350 mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
@@ -133,7 +133,6 @@ export default function LegalCategories() {
                     {CATEGORIES.map((cat) => {
                         const Icon = cat.icon;
 
-                        // ডাইনামিক কাউন্ট হিসাব
                         const lawyerCount = getLawyerCount(cat.matchKeys);
 
                         return (
