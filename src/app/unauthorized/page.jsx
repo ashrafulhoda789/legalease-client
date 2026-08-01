@@ -8,7 +8,6 @@ export default function UnauthorizedPage() {
         <div className="min-h-screen bg-[#0b1222] text-slate-200 flex items-center justify-center p-6 select-none">
             <div className="max-w-md w-full text-center space-y-6">
 
-                {/* Visual Icon / Illustration */}
                 <div className="relative mx-auto w-24 h-24 flex items-center justify-center rounded-3xl bg-amber-500/10 border border-amber-500/20 text-amber-400 shadow-2xl shadow-amber-500/10">
                     <svg
                         className="w-12 h-12"
