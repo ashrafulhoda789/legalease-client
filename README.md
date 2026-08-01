@@ -46,7 +46,7 @@
 ## Packages Used
 ```
 npm install better-auth @better-auth/mongo-adapter mongodb @heroui/react lucide-react react-icons
-
+```
 --- 
 
 ## Author
