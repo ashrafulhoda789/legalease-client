@@ -64,7 +64,6 @@ function NavbarContent() {
             <div className="max-w-350 mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
 
-                    {/* Logo & Brand */}
                     <div className="flex items-center gap-2">
                         <Link href="/" className="flex items-center gap-2">
                             <div className="bg-amber-600 p-2 rounded-lg text-white">
