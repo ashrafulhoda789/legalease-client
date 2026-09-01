@@ -41,23 +41,23 @@ function NavbarContent() {
         }
     };
 
-    // Logout Functionality
-    const handleLogout = async () => {
-        try {
-            await authClient.signOut({
-                fetchOptions: {
-                    onSuccess: () => {
-                        setIsProfileOpen(false);
-                        setIsMenuOpen(false);
-                        router.push('/auth/signin');
-                        router.refresh();
-                    },
-                },
-            });
-        } catch (error) {
-            console.error('Logout error:', error);
-        }
-    };
+    // // Logout Functionality
+    // const handleLogout = async () => {
+    //     try {
+    //         await authClient.signOut({
+    //             fetchOptions: {
+    //                 onSuccess: () => {
+    //                     setIsProfileOpen(false);
+    //                     setIsMenuOpen(false);
+    //                     router.push('/auth/signin');
+    //                     router.refresh();
+    //                 },
+    //             },
+    //         });
+    //     } catch (error) {
+    //         console.error('Logout error:', error);
+    //     }
+    // };
 
     return (
         <nav className="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
@@ -162,7 +162,7 @@ function NavbarContent() {
                                         </Link>
 
                                         <button
-                                            onClick={handleLogout}
+                                            onClick={async () => await authClient.signOut()}
                                             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-slate-700 hover:text-red-300 text-left"
                                         >
                                             <LogOut className="w-4 h-4" />
@@ -251,7 +251,7 @@ function NavbarContent() {
                                     Logged in as: <span className="text-amber-500">{user.email}</span>
                                 </div>
                                 <button
-                                    onClick={handleLogout}
+                                    onClick={async () => await authClient.signOut()}
                                     className="w-full flex items-center justify-center gap-2 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white py-2 rounded-lg text-sm transition-colors"
                                 >
                                     <LogOut className="w-4 h-4" />

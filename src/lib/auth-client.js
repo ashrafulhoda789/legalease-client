@@ -2,7 +2,7 @@ import { adminClient } from "better-auth/client/plugins"
 import { createAuthClient } from "better-auth/react"
 export const authClient = createAuthClient({
     
-    baseURL: "https://legalease-client-five.vercel.app",
+    baseURL: "http://localhost:3000",
     plugins: [
         adminClient()
     ]
