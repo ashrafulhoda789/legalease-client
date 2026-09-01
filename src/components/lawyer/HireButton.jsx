@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ShieldCheck, CheckCircle, Loader2 } from 'lucide-react';
+import { ShieldCheck, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
-import { createHireRequest } from '@/lib/action/lawyer-hiring'; // 👈 Server Action Import
+import { createHireRequest } from '@/lib/action/lawyer-hiring';
 
 export default function HireButton({ lawyer, lawyerId }) {
     const router = useRouter();
@@ -15,6 +15,9 @@ export default function HireButton({ lawyer, lawyerId }) {
     const [hireSuccess, setHireSuccess] = useState(false);
     const [submittingHire, setSubmittingHire] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+
+    // চেক করা হচ্ছে ইউজার Lawyer কিনা (role অনুযায়ী)
+    const isLawyer = currentUser?.role === 'lawyer' || currentUser?.role === 'LAWYER';
 
     const handleHireClick = () => {
         if (!currentUser) {
@@ -29,7 +32,6 @@ export default function HireButton({ lawyer, lawyerId }) {
         setErrorMessage('');
 
         try {
-            // Payload Prepare
             const payload = {
                 userId: currentUser.id,
                 userName: currentUser.name,
@@ -72,7 +74,31 @@ export default function HireButton({ lawyer, lawyerId }) {
             {isHireModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
                     <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 relative shadow-2xl">
-                        {!hireSuccess ? (
+
+                        {/* 🔴 ১. যদি লগইন করা ইউজার একজন Lawyer হন */}
+                        {isLawyer ? (
+                            <div className="text-center space-y-4 py-2">
+                                <div className="w-14 h-14 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto border border-rose-500/20">
+                                    <AlertCircle className="w-8 h-8" />
+                                </div>
+                                <div className="space-y-2">
+                                    <h3 className="text-xl font-bold text-white">Access Restricted</h3>
+                                    <p className="text-sm text-slate-300 font-medium">
+                                        Only User can Hire a lawyer.
+                                    </p>
+                                    <p className="text-xs text-slate-400">
+                                        Lawyer accounts cannot send hiring or consultation requests to other legal professionals.
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => setIsHireModalOpen(false)}
+                                    className="w-full bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-xl text-sm font-bold transition-colors border border-slate-700"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        ) : !hireSuccess ? (
+                            /* 🟢 ২. সাধারণ ইউজারদের জন্য হায়ার ফর্ম */
                             <>
                                 <div className="text-center space-y-2">
                                     <div className="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto">
