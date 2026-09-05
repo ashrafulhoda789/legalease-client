@@ -43,35 +43,76 @@ Detailed lawyer profiles showcase qualifications, experience, consultation fees,
 
 <p align="center">
   <img src="./screenshots/lawyers-detail.png" alt="LegalEase lawyer details" width="100%">
-  <img src="./screenshots/hire-button.png" alt="LegalEase lawyer details" width="100%">
+</p>
+
+<p align="center">
+  <img src="./screenshots/hire-button.png" alt="LegalEase Hire Lawyer" width="100%">
 </p>
 
 ### Dashboard
 #### User Dashboard
+The user dashboard allows users to manage hiring requests, comments, payments, appointments, and other account-related activities.
 
 <p align="center">
-  <img src="./screenshots/user-dashboard.png" alt="LegalEase user dashboard" width="100%">
-  <img src="./screenshots/user-hiring-request.png" alt="LegalEase user dashboard" width="100%">
-  <img src="./screenshots/user-comment-management.png" alt="LegalEase user dashboard" width="100%">
-  <img src="./screenshots/payment.png" alt="LegalEase user dashboard" width="100%">
+  <img src="./screenshots/user-dashboard.png" alt="LegalEase User Dashboard" width="100%">
 </p>
+
+<p align="center">
+  <img src="./screenshots/user-hiring-request.png" alt="LegalEase User Hiring Request" width="100%">
+</p>
+
+<p align="center">
+  <img src="./screenshots/user-comment-management.png" alt="LegalEase User Comment Management" width="100%">
+</p>
+
+<p align="center">
+  <img src="./screenshots/payment.png" alt="LegalEase Payment" width="100%">
+</p>
+---
 
 #### Lawyer Dashboard
 
+The lawyer dashboard provides tools for managing hiring requests, client interactions, and professional profile information.
+
 <p align="center">
-  <img src="./screenshots/lawyer-dashboard.png" alt="LegalEase lawyer dashboard" width="100%">
-  <img src="./screenshots/lawyer-hiring-request.png" alt="LegalEase lawyer dashboard" width="100%">
-  <img src="./screenshots/lawyer-profile-management.png" alt="LegalEase lawyer dashboard" width="100%">
+  <img src="./screenshots/lawyer-dashboard.png" alt="LegalEase Lawyer Dashboard" width="100%">
 </p>
+
+<p align="center">
+  <img src="./screenshots/lawyer-hiring-request.png" alt="LegalEase Lawyer Hiring Request" width="100%">
+</p>
+
+<p align="center">
+  <img src="./screenshots/lawyer-profile-management.png" alt="LegalEase Lawyer Profile Management" width="100%">
+</p>
+---
 
 #### Admin Dashboard
+The admin dashboard provides system-wide oversight, including user management, lawyer management, transactions, approvals, and platform analytics.
 
 <p align="center">
-  <img src="./screenshots/admin-dashboard.png" alt="LegalEase admin dashboard" width="100%">
-  <img src="./screenshots/user-management.png" alt="LegalEase admin dashboard" width="100%">
-  <img src="./screenshots/all-transaction.png" alt="LegalEase admin dashboard" width="100%">
+  <img src="./screenshots/admin-dashboard.png" alt="LegalEase Admin Dashboard" width="100%">
 </p>
 
+<p align="center">
+  <img src="./screenshots/user-management.png" alt="LegalEase User Management" width="100%">
+</p>
+
+<p align="center">
+  <img src="./screenshots/all-transaction.png" alt="LegalEase All Transactions" width="100%">
+</p>
+
+---
+
+### UI Highlights
+
+- Dark blue-themed professional legal platform design
+- Responsive layout for desktop, tablet, and mobile devices
+- Advanced lawyer search and specialization filtering
+- Modern card-based lawyer listing interface
+- Secure consultation and hiring workflow
+- Role-based dashboards for Users, Lawyers, and Admins
+- Interactive user experience with Hero UI components
 
 ##  Tech Stack & NPM Packages Used
 
