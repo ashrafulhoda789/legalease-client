@@ -14,6 +14,7 @@
 
 -  **Multi-Role Authentication**: Secure authentication system supporting regular **Users**, **Lawyers**, and **Admins**.
 -  **Lawyer Directory**: Easily browse and search legal experts by name or specialization using global search.
+-  **Secure SSLCommerz Integration**: Seamless and secure online payment gateway integration for hassle-free consultation fee transactions.
 -  **Dynamic Role-Based Dashboards**:
   - **User Dashboard**: Manage appointments, consultations, and profile settings.
   - **Lawyer Dashboard**: Manage consultation requests, client schedules, and profile details.
