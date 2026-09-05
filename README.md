@@ -28,7 +28,7 @@
 The homepage provides a modern legal marketplace experience with featured lawyers, quick search, and consultation options.
 
 <p align="center">
-  <img src="./screenshots/homepage.png" alt="LegalEase Homepage" width="100%">
+  <img src="screenshots/homepage.png" alt="LegalEase Homepage" width="100%">
 </p>
 
 ### Browse Layers
